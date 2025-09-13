@@ -1,0 +1,23 @@
+
+spring:
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://192.168.52.124:5433/detailing
+    username: admin
+    password: passw0rd
+  jpa:
+    hibernate:
+      ddl-auto: create
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 10MB
+app:
+  jwt:
+    secret: your-very-secure-secret-key-at-least-256-bits-long
+    expiration-ms: 86400000 # 24 часа
