@@ -1,5 +1,6 @@
 package com.nikulshin.detailing.service;
 
+import com.nikulshin.detailing.model.domain.Role;
 import com.nikulshin.detailing.model.domain.User;
 import com.nikulshin.detailing.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -7,6 +8,8 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -26,7 +29,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         return org.springframework.security.core.userdetails.User.builder()
                 .username(user.getUsername())
                 .password(user.getPassword())
-                .roles(user.getRole().name())
+                .roles(user.getRoles().stream().map(Role::getName).collect(Collectors.joining()))
                 .build();
     }
 }

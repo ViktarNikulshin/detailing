@@ -1,4 +1,6 @@
-
+server:
+  servlet:
+    context-path: /detailing
 spring:
   datasource:
     driver-class-name: org.postgresql.Driver
@@ -7,7 +9,7 @@ spring:
     password: passw0rd
   jpa:
     hibernate:
-      ddl-auto: create
+      ddl-auto: update
     show-sql: true
     properties:
       hibernate:

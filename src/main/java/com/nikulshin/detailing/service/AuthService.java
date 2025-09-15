@@ -1,6 +1,7 @@
 package com.nikulshin.detailing.service;
 
 
+import com.nikulshin.detailing.mapper.UserMapper;
 import com.nikulshin.detailing.model.domain.User;
 import com.nikulshin.detailing.model.dto.AuthRequest;
 import com.nikulshin.detailing.model.dto.AuthResponse;
@@ -19,6 +20,7 @@ public class AuthService {
     private final AuthenticationManager authenticationManager;
     private final UserRepository userRepository;
     private final JwtTokenProvider jwtTokenProvider;
+    private final UserMapper userMapper;
 
     public AuthResponse authenticate(AuthRequest authRequest) {
         Authentication authentication = authenticationManager.authenticate(
@@ -30,11 +32,11 @@ public class AuthService {
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
-        User user = userRepository.findByUsername(authRequest.getUsername())
+        User user = userRepository.findByUsernameWithRoles(authRequest.getUsername())
                 .orElseThrow(() -> new RuntimeException("User not found after authentication"));
 
         String token = jwtTokenProvider.generateToken(authentication);
 
-        return new AuthResponse(token, user);
+        return new AuthResponse(token, userMapper.domainToDto(user));
     }
 }
