@@ -57,19 +57,19 @@ public class DictionaryServiceImpl implements DictionaryService {
     @Override
     @Transactional(readOnly = true)
     public List<DictionaryDto> getAllDictionaryItems() {
-        return dictionaryMapper.domainsToDtos(dictionaryRepository.findAll()).stream().toList();
+        return dictionaryMapper.domainsToDtos(dictionaryRepository.findAll());
     }
 
     @Override
     @Transactional(readOnly = true)
     public List<DictionaryDto> getDictionaryItemsByType(String type) {
-        return dictionaryMapper.domainsToDtos(dictionaryRepository.findByType(type)).stream().toList();
+        return dictionaryMapper.domainsToDtos(dictionaryRepository.findByType(type));
     }
 
     @Override
     @Transactional(readOnly = true)
     public List<DictionaryDto> getActiveDictionaryItemsByType(String type) {
-        return dictionaryMapper.domainsToDtos(dictionaryRepository.findByTypeAndIsActiveTrue(type)).stream().toList();
+        return dictionaryMapper.domainsToDtos(dictionaryRepository.findByTypeAndIsActiveTrue(type));
     }
 
     @Override

@@ -5,5 +5,5 @@ import com.nikulshin.detailing.model.dto.CarModelDto;
 import org.mapstruct.Mapper;
 
 @Mapper(componentModel = "spring")
-public interface ModelMapper extends BaseMapper<CarModel, CarModelDto>{
+public interface ModelMapper extends BaseMapper<CarModel, CarModelDto> {
 }

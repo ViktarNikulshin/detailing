@@ -19,7 +19,7 @@ public class OrderDto {
     private String carBrand;
     private String carModel;
     private String vin;
-    private List<Long> workTypeIds; // список id словаря (dictionary)
+    private List<Long> workTypeIds;
     private Long masterId;
     private LocalDateTime executionDate;
     private OrderStatus status;

@@ -1,6 +1,8 @@
 package com.nikulshin.detailing.service;
 
+import com.nikulshin.detailing.mapper.UserMapper;
 import com.nikulshin.detailing.model.domain.User;
+import com.nikulshin.detailing.model.dto.UserDto;
 import com.nikulshin.detailing.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -11,12 +13,16 @@ import java.util.List;
 @RequiredArgsConstructor
 public class UserService {
     private final UserRepository userRepository;
-    public List<User> findAll() {
-        return userRepository.findAll();
+    private final UserMapper userMapper;
+
+    public List<UserDto> findAll() {
+        return userMapper.domainsToDtos(userRepository.findAll());
     }
+
     public List<User> findByRole(String code) {
         return userRepository.findAllByRole(code);
     }
+
     public User getUserById(Long id) {
         return userRepository.findById(id).orElse(null);
     }

@@ -1,6 +1,7 @@
 package com.nikulshin.detailing.controller;
 
 import com.nikulshin.detailing.model.domain.User;
+import com.nikulshin.detailing.model.dto.UserDto;
 import com.nikulshin.detailing.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -17,7 +18,7 @@ public class UserController {
     private final UserService userService;
 
     @GetMapping
-    public List<User> findAll() {
+    public List<UserDto> findAll() {
         return userService.findAll();
     }
 

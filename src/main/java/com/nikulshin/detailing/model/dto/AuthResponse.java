@@ -1,6 +1,5 @@
 package com.nikulshin.detailing.model.dto;
 
-import com.nikulshin.detailing.model.domain.User;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 

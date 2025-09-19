@@ -1,10 +1,13 @@
 package com.nikulshin.detailing.controller;
 
-import com.nikulshin.detailing.model.domain.CarModel;
 import com.nikulshin.detailing.model.dto.CarBrandDto;
 import com.nikulshin.detailing.model.dto.CarModelDto;
 import com.nikulshin.detailing.service.CarCatalogService;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
 import java.util.List;
 
 @RestController

@@ -10,6 +10,7 @@ import jakarta.persistence.ManyToMany;
 import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.Setter;
+
 import java.util.HashSet;
 import java.util.Set;
 
@@ -30,7 +31,8 @@ public class Role {
     private Set<User> users = new HashSet<>();
 
     // Конструкторы
-    public Role() {}
+    public Role() {
+    }
 
     public Role(String name) {
         this.name = name;

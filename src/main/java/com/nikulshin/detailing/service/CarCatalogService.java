@@ -20,10 +20,10 @@ public class CarCatalogService {
     private final ModelMapper modelMapper;
 
     public List<CarBrandDto> getAllBrands() {
-        return brandMapper.domainsToDtos(brandRepository.findAll()).stream().toList();
+        return brandMapper.domainsToDtos(brandRepository.findAll());
     }
 
     public List<CarModelDto> getModelsByBrand(Long brandId) {
-        return modelMapper.domainsToDtos(modelRepository.findByBrandId(brandId)).stream().toList();
+        return modelMapper.domainsToDtos(modelRepository.findByBrandId(brandId));
     }
 }

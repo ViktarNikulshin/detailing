@@ -8,7 +8,6 @@ import com.nikulshin.detailing.model.domain.User;
 import com.nikulshin.detailing.model.dto.OrderDto;
 import com.nikulshin.detailing.repository.DictionaryRepository;
 import com.nikulshin.detailing.repository.OrderRepository;
-import com.nikulshin.detailing.repository.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -23,7 +22,7 @@ public class OrderService {
 
     private final OrderRepository orderRepository;
     private final DictionaryRepository dictionaryRepository;
-    private final OrderMapper  orderMapper;
+    private final OrderMapper orderMapper;
     private final UserService userService;
 
     public Order createOrder(OrderDto orderDto) {
