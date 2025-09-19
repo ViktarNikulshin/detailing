@@ -10,3 +10,10 @@ INSERT INTO car_models (name, brand_id) VALUES
                                             ('3 Series', 2),
                                             ('E-Class', 3),
                                             ('C-Class', 3);
+create table order_work_types
+(
+    order_id      bigint,
+    dictionary_id bigint,
+    constraint order_work_types_pk
+        primary key (order_id, dictionary_id)
+);

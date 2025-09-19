@@ -8,11 +8,15 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.Data;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "orders")
@@ -37,8 +41,14 @@ public class Order {
     @Column(unique = true)
     private String vin;
 
-    @Column(nullable = false)
-    private String workType;
+    // связь many-to-many с dictionary
+    @ManyToMany
+    @JoinTable(
+            name = "order_work_types",
+            joinColumns = @JoinColumn(name = "order_id"),
+            inverseJoinColumns = @JoinColumn(name = "dictionary_id")
+    )
+    private List<Dictionary> workTypes = new ArrayList<>();
 
     @ManyToOne
     @JoinColumn(name = "master_id")
@@ -55,4 +65,5 @@ public class Order {
 
     private LocalDateTime createdAt;
 }
+
 

@@ -13,14 +13,15 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class OrderDto {
+public class OrderResponseDto {
+    private Long id;
     private String clientName;
     private String clientPhone;
     private String carBrand;
     private String carModel;
     private String vin;
-    private List<Long> workTypeIds; // список id словаря (dictionary)
-    private Long masterId;
+    private List<String> workTypes;
+    private String masterName;
     private LocalDateTime executionDate;
     private OrderStatus status;
 }
