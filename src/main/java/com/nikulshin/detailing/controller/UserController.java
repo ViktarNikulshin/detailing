@@ -23,7 +23,7 @@ public class UserController {
     }
 
     @GetMapping("/role/{code}")
-    public List<User> findByRole(@PathVariable String code) {
+    public List<UserDto> findByRole(@PathVariable String code) {
         return userService.findByRole(code);
     }
 

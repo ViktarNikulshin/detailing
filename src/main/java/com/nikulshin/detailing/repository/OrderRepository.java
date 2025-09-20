@@ -10,5 +10,4 @@ import java.util.List;
 
 public interface OrderRepository extends JpaRepository<Order, Long> {
     List<Order> findByExecutionDateBetween(LocalDateTime start, LocalDateTime end);
-    List<Order> findByMasterAndExecutionDateBetween(User master, LocalDateTime start, LocalDateTime end);
 }

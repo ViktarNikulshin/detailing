@@ -35,27 +35,23 @@ public class OrderService {
         }
 
 
-        if (orderDto.getMasterId() != null) {
-            User master = userService.getUserById(orderDto.getMasterId());
-            order.setMaster(master);
+        if (orderDto.getMasterIds() != null && !orderDto.getMasterIds().isEmpty()) {
+            List<User> masters = userService.getUsersByIds(orderDto.getMasterIds());
+            order.setMasters(masters);
         }
         order.setCreatedAt(LocalDateTime.now());
         order.setStatus(OrderStatus.NEW);
         return orderRepository.save(order);
     }
 
-    public List<Order> getOrdersByDateRange(LocalDateTime start, LocalDateTime end) {
-        return orderRepository.findByExecutionDateBetween(start, end);
+    public List<OrderDto> getOrdersByDateRange(LocalDateTime start, LocalDateTime end) {
+
+        return orderMapper.domainsToDtos(orderRepository.findByExecutionDateBetween(start, end));
     }
 
     public OrderDto getOrdersById(Long orderId) {
         Order order = orderRepository.findById(orderId).orElseThrow(EntityNotFoundException::new);
-        OrderDto orderDto = orderMapper.domainToDto(order);
-        if (order.getWorkTypes() != null && !order.getWorkTypes().isEmpty()) {
-            orderDto.setWorkTypeIds(order.getWorkTypes().stream().map(Dictionary::getId).toList());
-        }
-
-        return orderDto;
+        return orderMapper.domainToDto(order);
     }
 
     public Order updateOrder(Long id, OrderDto orderDto) {

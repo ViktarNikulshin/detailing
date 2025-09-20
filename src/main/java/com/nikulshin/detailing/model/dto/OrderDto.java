@@ -14,13 +14,14 @@ import java.util.List;
 @AllArgsConstructor
 @Builder
 public class OrderDto {
+    private Long id;
     private String clientName;
     private String clientPhone;
     private String carBrand;
     private String carModel;
     private String vin;
     private List<Long> workTypeIds;
-    private Long masterId;
+    private List<Long> masterIds;
     private LocalDateTime executionDate;
     private OrderStatus status;
 }

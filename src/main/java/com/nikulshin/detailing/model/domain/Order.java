@@ -41,7 +41,6 @@ public class Order {
     @Column(unique = true)
     private String vin;
 
-    // связь many-to-many с dictionary
     @ManyToMany
     @JoinTable(
             name = "order_work_types",
@@ -50,9 +49,14 @@ public class Order {
     )
     private List<Dictionary> workTypes = new ArrayList<>();
 
-    @ManyToOne
-    @JoinColumn(name = "master_id")
-    private User master;
+
+    @ManyToMany
+    @JoinTable(
+            name = "order_user_master",
+            joinColumns = @JoinColumn(name = "order_id"),
+            inverseJoinColumns = @JoinColumn(name = "user_id")
+    )
+    private List<User> masters;
 
     @Column(nullable = false)
     private LocalDateTime executionDate;

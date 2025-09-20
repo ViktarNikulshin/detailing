@@ -7,6 +7,7 @@ import com.nikulshin.detailing.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -19,11 +20,14 @@ public class UserService {
         return userMapper.domainsToDtos(userRepository.findAll());
     }
 
-    public List<User> findByRole(String code) {
-        return userRepository.findAllByRole(code);
+    public List<UserDto> findByRole(String code) {
+        return userMapper.domainsToDtos(userRepository.findAllByRole(code));
     }
 
     public User getUserById(Long id) {
         return userRepository.findById(id).orElse(null);
+    }
+    public List<User> getUsersByIds(List<Long> ids) {
+        return userRepository.findAllById(ids);
     }
 }

@@ -37,7 +37,7 @@ public class OrderController {
     }
 
     @GetMapping("/calendar")
-    public ResponseEntity<List<Order>> getCalendarOrders(
+    public ResponseEntity<List<OrderDto>> getCalendarOrders(
             @RequestParam LocalDateTime start,
             @RequestParam LocalDateTime end) {
         return ResponseEntity.ok(orderService.getOrdersByDateRange(start, end));
