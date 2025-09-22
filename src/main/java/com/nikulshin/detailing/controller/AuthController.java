@@ -24,9 +24,9 @@ public class AuthController {
         return ResponseEntity.ok(authResponse);
     }
 
-    @PostMapping("/validate")
-    public ResponseEntity<Boolean> validateToken() {
-        // Токен валидируется через JwtAuthenticationFilter
+    @PostMapping("/validate-token")
+    public ResponseEntity<Boolean> validateToken(String token) {
+        authService.checkToken(token);
         return ResponseEntity.ok(true);
     }
 }

@@ -39,4 +39,8 @@ public class AuthService {
 
         return new AuthResponse(token, userMapper.domainToDto(user));
     }
+
+    public boolean checkToken(String token) {
+        return jwtTokenProvider.validateToken(token);
+    }
 }
