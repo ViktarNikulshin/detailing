@@ -17,8 +17,8 @@ public class OrderDto {
     private Long id;
     private String clientName;
     private String clientPhone;
-    private String carBrand;
-    private String carModel;
+    private CarBrandDto carBrand;
+    private CarModelDto carModel;
     private String vin;
     private List<Long> workTypeIds;
     private List<Long> masterIds;

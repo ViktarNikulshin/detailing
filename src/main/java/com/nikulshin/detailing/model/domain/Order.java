@@ -4,6 +4,7 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -32,11 +33,13 @@ public class Order {
     @Column(nullable = false)
     private String clientPhone;
 
-    @Column(nullable = false)
-    private String carBrand;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "car_brand_id")
+    private CarBrand carBrand;
 
-    @Column(nullable = false)
-    private String carModel;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "car_model_id")
+    private CarModel carModel;
 
     @Column(unique = true)
     private String vin;
