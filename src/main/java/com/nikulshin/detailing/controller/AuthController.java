@@ -26,7 +26,6 @@ public class AuthController {
 
     @PostMapping("/validate-token")
     public ResponseEntity<Boolean> validateToken(String token) {
-        authService.checkToken(token);
-        return ResponseEntity.ok(true);
+        return ResponseEntity.ok(authService.checkToken(token));
     }
 }
