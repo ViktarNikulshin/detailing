@@ -24,4 +24,5 @@ public class OrderDto {
     private List<Long> masterIds;
     private LocalDateTime executionDate;
     private OrderStatus status;
+    private Integer orderCost;
 }
