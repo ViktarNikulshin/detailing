@@ -39,8 +39,10 @@ public class OrderController {
     @GetMapping("/calendar")
     public ResponseEntity<List<OrderDto>> getCalendarOrders(
             @RequestParam LocalDateTime start,
-            @RequestParam LocalDateTime end) {
-        return ResponseEntity.ok(orderService.getOrdersByDateRange(start, end));
+            @RequestParam LocalDateTime end,
+            @RequestParam(name = "masterId", required = false) Long masterId,
+            @RequestParam(name = "status", required = false) String status) {
+        return ResponseEntity.ok(orderService.getOrdersByDateRange(start, end, masterId, status));
     }
 
     @GetMapping("/{id}")

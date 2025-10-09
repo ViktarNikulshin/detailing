@@ -44,9 +44,23 @@ public class OrderService {
         return orderRepository.save(order);
     }
 
-    public List<OrderDto> getOrdersByDateRange(LocalDateTime start, LocalDateTime end) {
-
-        return orderMapper.domainsToDtos(orderRepository.findByExecutionDateBetween(start, end));
+    public List<OrderDto> getOrdersByDateRange(LocalDateTime start, LocalDateTime end, Long masterId, String status) {
+        List<Order> orders = orderRepository.findByExecutionDateBetween(start, end);
+        if (masterId != null) {
+            orders = orders
+                    .stream()
+                    .filter(o -> o.getMasters()
+                            .stream()
+                            .map(User::getId)
+                            .toList().contains(masterId))
+                    .toList();
+        }
+        if (status != null) {
+            orders = orders.stream()
+                    .filter(o -> o.getStatus() == OrderStatus.valueOf(status))
+                    .toList();
+        }
+        return orderMapper.domainsToDtos(orders);
     }
 
     public OrderDto getOrdersById(Long orderId) {
