@@ -23,7 +23,6 @@ public interface OrderMapper extends BaseMapper<Order, OrderDto> {
     @Mapping(target = "masters", ignore = true)
     Order dtoToDomain(OrderDto dto);
 
-    @Mapping(target = "workTypeIds", source = "workTypes", qualifiedByName = "extractIdsFromDictionary")
     @Mapping(target = "masterIds",  source = "masters", qualifiedByName = "extractIdsFromUser")
     OrderDto domainToDto(Order order);
 

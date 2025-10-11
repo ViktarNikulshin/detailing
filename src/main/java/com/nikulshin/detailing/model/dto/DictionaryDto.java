@@ -18,8 +18,4 @@ public class DictionaryDto {
     private String name;
     private String description;
     private String type;
-    private Boolean isActive;
-    private Integer sortOrder;
-    private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
 }

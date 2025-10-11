@@ -5,6 +5,7 @@ import com.nikulshin.detailing.model.domain.Dictionary;
 import com.nikulshin.detailing.model.domain.Order;
 import com.nikulshin.detailing.model.domain.OrderStatus;
 import com.nikulshin.detailing.model.domain.User;
+import com.nikulshin.detailing.model.dto.DictionaryDto;
 import com.nikulshin.detailing.model.dto.OrderDto;
 import com.nikulshin.detailing.repository.DictionaryRepository;
 import com.nikulshin.detailing.repository.OrderRepository;
@@ -27,8 +28,11 @@ public class OrderService {
 
     public Order createOrder(OrderDto orderDto) {
         Order order = orderMapper.dtoToDomain(orderDto);
-        if (orderDto.getWorkTypeIds() != null && !orderDto.getWorkTypeIds().isEmpty()) {
-            List<Dictionary> workTypes = dictionaryRepository.findAllById(orderDto.getWorkTypeIds());
+        if (orderDto.getWorkTypes() != null && !orderDto.getWorkTypes().isEmpty()) {
+            List<Dictionary> workTypes = dictionaryRepository.findAllById(orderDto.getWorkTypes()
+                    .stream()
+                    .map(DictionaryDto::getId)
+                    .toList());
             order.setWorkTypes(workTypes);
         } else {
             order.setWorkTypes(new ArrayList<>());
@@ -71,8 +75,24 @@ public class OrderService {
     public Order updateOrder(Long id, OrderDto orderDto) {
         Order order = orderMapper.dtoToDomain(orderDto);
         order.setId(id);
-        List<Dictionary> workTypes = dictionaryRepository.findAllById(orderDto.getWorkTypeIds());
+        List<Dictionary> workTypes = dictionaryRepository.findAllById(orderDto.getWorkTypes()
+                .stream()
+                .map(DictionaryDto::getId)
+                .toList());
         order.setWorkTypes(workTypes);
+        order.setCreatedAt(LocalDateTime.now());
+        order.setStatus(currentStatus(id));
         return orderRepository.save(order);
+    }
+
+    private OrderStatus currentStatus(Long id) {
+        return orderRepository.findById(id).orElseThrow(EntityNotFoundException::new).getStatus();
+    }
+
+    public OrderDto changeStatus(Long id, String code, String masterId) {
+        Order order = orderRepository.findById(id).orElseThrow(EntityNotFoundException::new);
+        order.setStatus(OrderStatus.valueOf(code));
+        order.setCreatedAt(LocalDateTime.now());
+        return orderMapper.domainToDto(orderRepository.save(order));
     }
 }

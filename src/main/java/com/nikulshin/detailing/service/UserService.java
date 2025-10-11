@@ -7,7 +7,6 @@ import com.nikulshin.detailing.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -27,7 +26,16 @@ public class UserService {
     public User getUserById(Long id) {
         return userRepository.findById(id).orElse(null);
     }
+
     public List<User> getUsersByIds(List<Long> ids) {
         return userRepository.findAllById(ids);
+    }
+
+    public void updateUser(Long id, UserDto userDto) {
+        userRepository.findById(id).ifPresent(u -> {
+            u.setFirstName(userDto.getFirstName());
+            u.setLastName(userDto.getLastName());
+            userRepository.save(u);
+        });
     }
 }

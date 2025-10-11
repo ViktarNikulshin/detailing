@@ -49,4 +49,9 @@ public class OrderController {
     public ResponseEntity<OrderDto> getOrderById(@PathVariable Long id) {
         return ResponseEntity.ok(orderService.getOrdersById(id));
     }
+
+    @GetMapping("/change/{id}")
+    public ResponseEntity<OrderDto> getOrderById(@PathVariable Long id, @RequestParam String code, @RequestParam String master) {
+        return ResponseEntity.ok(orderService.changeStatus(id, code, master));
+    }
 }
