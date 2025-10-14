@@ -1,18 +1,6 @@
 package com.nikulshin.detailing.model.domain;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.JoinTable;
-import jakarta.persistence.ManyToMany;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.Data;
 
 import java.time.LocalDateTime;
@@ -44,13 +32,13 @@ public class Order {
     @Column(unique = true)
     private String vin;
 
-    @ManyToMany
-    @JoinTable(
-            name = "order_work_types",
-            joinColumns = @JoinColumn(name = "order_id"),
-            inverseJoinColumns = @JoinColumn(name = "dictionary_id")
+    @OneToMany(
+            mappedBy = "order",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true,
+            fetch = FetchType.LAZY
     )
-    private List<Dictionary> workTypes = new ArrayList<>();
+    private List<Work> works = new ArrayList<>();
 
 
     @ManyToMany
@@ -72,6 +60,13 @@ public class Order {
 
     private LocalDateTime createdAt;
     private Integer orderCost;
+    public void addWork(Work work) {
+        this.works.add(work);
+        work.setOrder(this); // 👈 Устанавливает обратную ссылку
+    }
+
+    public void removeWork(Work work) {
+        this.works.remove(work);
+        work.setOrder(null);
+    }
 }
-
-

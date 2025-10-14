@@ -20,7 +20,7 @@ public class OrderDto {
     private CarBrandDto carBrand;
     private CarModelDto carModel;
     private String vin;
-    private List<DictionaryDto> workTypes;
+    private List<WorkDto> works;
     private List<Long> masterIds;
     private LocalDateTime executionDate;
     private OrderStatus status;

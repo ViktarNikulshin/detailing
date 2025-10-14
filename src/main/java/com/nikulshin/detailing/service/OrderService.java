@@ -1,20 +1,16 @@
 package com.nikulshin.detailing.service;
 
 import com.nikulshin.detailing.mapper.OrderMapper;
-import com.nikulshin.detailing.model.domain.Dictionary;
 import com.nikulshin.detailing.model.domain.Order;
 import com.nikulshin.detailing.model.domain.OrderStatus;
 import com.nikulshin.detailing.model.domain.User;
-import com.nikulshin.detailing.model.dto.DictionaryDto;
 import com.nikulshin.detailing.model.dto.OrderDto;
-import com.nikulshin.detailing.repository.DictionaryRepository;
 import com.nikulshin.detailing.repository.OrderRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -22,29 +18,18 @@ import java.util.List;
 public class OrderService {
 
     private final OrderRepository orderRepository;
-    private final DictionaryRepository dictionaryRepository;
     private final OrderMapper orderMapper;
     private final UserService userService;
 
     public Order createOrder(OrderDto orderDto) {
         Order order = orderMapper.dtoToDomain(orderDto);
-        if (orderDto.getWorkTypes() != null && !orderDto.getWorkTypes().isEmpty()) {
-            List<Dictionary> workTypes = dictionaryRepository.findAllById(orderDto.getWorkTypes()
-                    .stream()
-                    .map(DictionaryDto::getId)
-                    .toList());
-            order.setWorkTypes(workTypes);
-        } else {
-            order.setWorkTypes(new ArrayList<>());
-        }
-
-
         if (orderDto.getMasterIds() != null && !orderDto.getMasterIds().isEmpty()) {
             List<User> masters = userService.getUsersByIds(orderDto.getMasterIds());
             order.setMasters(masters);
         }
         order.setCreatedAt(LocalDateTime.now());
         order.setStatus(OrderStatus.NEW);
+        order.getWorks().forEach(work -> work.setOrder(order));
         return orderRepository.save(order);
     }
 
@@ -75,13 +60,9 @@ public class OrderService {
     public Order updateOrder(Long id, OrderDto orderDto) {
         Order order = orderMapper.dtoToDomain(orderDto);
         order.setId(id);
-        List<Dictionary> workTypes = dictionaryRepository.findAllById(orderDto.getWorkTypes()
-                .stream()
-                .map(DictionaryDto::getId)
-                .toList());
-        order.setWorkTypes(workTypes);
         order.setCreatedAt(LocalDateTime.now());
         order.setStatus(currentStatus(id));
+        order.getWorks().forEach(work -> work.setOrder(order));
         return orderRepository.save(order);
     }
 
