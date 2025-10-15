@@ -1,7 +1,6 @@
 package com.nikulshin.detailing.mapper;
 
 
-import com.nikulshin.detailing.model.domain.Dictionary;
 import com.nikulshin.detailing.model.domain.Order;
 import com.nikulshin.detailing.model.domain.User;
 import com.nikulshin.detailing.model.dto.OrderDto;

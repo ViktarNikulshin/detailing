@@ -28,10 +28,7 @@ public class CarCatalogController {
         return service.getAllBrands();
     }
 
-    @GetMapping("/car-models/{brandId}")
-    public List<CarModelDto> getModelsByBrand(@PathVariable Long brandId) {
-        return service.getModelsByBrand(brandId);
-    }
+
 
     @PostMapping("/car-brands")
     public ResponseEntity<String> addBrand(@RequestBody List<AddCar> brands) {

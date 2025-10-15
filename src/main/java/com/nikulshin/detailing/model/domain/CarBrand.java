@@ -24,7 +24,4 @@ public class CarBrand {
     @Column(nullable = false, unique = true)
     private String name;
 
-    @OneToMany(mappedBy = "brand", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<CarModel> models;
-
 }
