@@ -1,0 +1,78 @@
+name: Backend CI/CD (Java/Gradle)
+
+on:
+  push:
+    branches:
+      - master
+    # Опционально: можно указать путь к коду бэкенда, например, 'backend/**'
+
+jobs:
+  build-and-deploy-back:
+    runs-on: ubuntu-latest
+
+    env:
+      REMOTE_DIR: /opt/detailing # Рабочая директория на сервере
+      # ✅ ИСПРАВЛЕНО: Путь к WAR-файлу после сборки Gradle
+      JAVA_WAR_PATH: build/libs/detailing-0.0.1-SNAPSHOT-plain.war
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # ==================================
+      # 1. СБОРКА JAVA/GRADLE
+      # ==================================
+      - name: Setup Java 21 Environment
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '21'
+
+      # Предоставление прав на выполнение для Gradle Wrapper
+      - name: Grant execute permission to gradlew
+        run: chmod +x gradlew
+
+      # Используем официальный экшен для сборки Gradle с автоматическим кэшированием
+      - name: Build with Gradle and Cache
+        uses: gradle/gradle-build-action@v2
+        with:
+          arguments: clean build -x test # Сборка и пропуск тестов (опционально)
+
+      # ==================================
+      # 2. ПЕРЕДАЧА ФАЙЛОВ НА СЕРВЕР (SCP)
+      # ==================================
+      - name: Setup SSH
+        uses: webfactory/ssh-agent@v0.9.0
+        with:
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+      # Передача WAR-файла в папку /opt/order-app/build/libs/
+      # Соответствует: ./build/libs/detailing-0.0.1-SNAPSHOT-plain.war:/...
+      - name: Transfer Java WAR artifact
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.HOST_IP }}
+          username: ${{ secrets.HOST_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          # Source: Ваш собранный WAR-файл (путь взят из env)
+          source: "${{ env.JAVA_WAR_PATH }}"
+          target: "${{ env.REMOTE_DIR }}/build/libs/"
+
+      # ==================================
+      # 3. ПОЛНЫЙ ПЕРЕЗАПУСК СТЕКА DOCKER COMPOSE
+      # ==================================
+      - name: Full Docker Compose restart
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.HOST_IP }}
+          username: ${{ secrets.HOST_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            echo "Starting full deployment on server..."
+            cd ${{ env.REMOTE_DIR }}
+            
+            # Остановка и запуск всего стека
+            docker compose down 
+            docker compose up -d 
+            
+            echo "All services restarted (Postgres, Tomcat, Nginx)."
