@@ -21,7 +21,7 @@ public class OrderService {
     private final OrderMapper orderMapper;
     private final UserService userService;
 
-    public Order createOrder(OrderDto orderDto) {
+    public OrderDto createOrder(OrderDto orderDto) {
         Order order = orderMapper.dtoToDomain(orderDto);
         if (orderDto.getMasterIds() != null && !orderDto.getMasterIds().isEmpty()) {
             List<User> masters = userService.getUsersByIds(orderDto.getMasterIds());
@@ -30,7 +30,7 @@ public class OrderService {
         order.setCreatedAt(LocalDateTime.now());
         order.setStatus(OrderStatus.NEW);
         order.getWorks().forEach(work -> work.setOrder(order));
-        return orderRepository.save(order);
+        return orderMapper.domainToDto(orderRepository.save(order));
     }
 
     public List<OrderDto> getOrdersByDateRange(LocalDateTime start, LocalDateTime end, Long masterId, String status) {
@@ -57,13 +57,13 @@ public class OrderService {
         return orderMapper.domainToDto(order);
     }
 
-    public Order updateOrder(Long id, OrderDto orderDto) {
+    public OrderDto updateOrder(Long id, OrderDto orderDto) {
         Order order = orderMapper.dtoToDomain(orderDto);
         order.setId(id);
         order.setCreatedAt(LocalDateTime.now());
         order.setStatus(currentStatus(id));
         order.getWorks().forEach(work -> work.setOrder(order));
-        return orderRepository.save(order);
+        return orderMapper.domainToDto(orderRepository.save(order));
     }
 
     private OrderStatus currentStatus(Long id) {

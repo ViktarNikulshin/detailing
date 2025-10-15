@@ -26,13 +26,13 @@ public class OrderController {
 
     @PostMapping
     @PreAuthorize("hasAnyRole('MANAGER', 'ADMIN')")
-    public ResponseEntity<Order> createOrder(@RequestBody OrderDto order) {
+    public ResponseEntity<OrderDto> createOrder(@RequestBody OrderDto order) {
         return ResponseEntity.ok(orderService.createOrder(order));
     }
 
     @PutMapping("/{id}")
     @PreAuthorize("hasAnyRole('MANAGER', 'ADMIN')")
-    public ResponseEntity<Order> updateOrder(@PathVariable Long id, @RequestBody OrderDto order) {
+    public ResponseEntity<OrderDto> updateOrder(@PathVariable Long id, @RequestBody OrderDto order) {
         return ResponseEntity.ok(orderService.updateOrder(id, order));
     }
 

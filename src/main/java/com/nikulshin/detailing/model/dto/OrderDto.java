@@ -18,7 +18,6 @@ public class OrderDto {
     private String clientName;
     private String clientPhone;
     private CarBrandDto carBrand;
-    private CarModelDto carModel;
     private String vin;
     private List<WorkDto> works;
     private List<Long> masterIds;

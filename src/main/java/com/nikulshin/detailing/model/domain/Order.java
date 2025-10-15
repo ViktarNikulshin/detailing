@@ -40,10 +40,6 @@ public class Order {
     @JoinColumn(name = "car_brand_id")
     private CarBrand carBrand;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "car_model_id")
-    private CarModel carModel;
-
     @Column(unique = true)
     private String vin;
 
