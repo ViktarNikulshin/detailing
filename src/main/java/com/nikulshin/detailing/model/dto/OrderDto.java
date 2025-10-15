@@ -25,4 +25,5 @@ public class OrderDto {
     private LocalDateTime executionDate;
     private OrderStatus status;
     private Integer orderCost;
+    private DictionaryDto infoSource;
 }

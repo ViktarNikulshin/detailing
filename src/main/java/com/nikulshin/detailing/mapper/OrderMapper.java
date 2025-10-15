@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Mapper(componentModel = "spring", uses = {WorkMapper.class,
-        UserMapper.class, BrandMapper.class, ModelMapper.class})
+        UserMapper.class, BrandMapper.class, ModelMapper.class, DictionaryMapper.class})
 public interface OrderMapper extends BaseMapper<Order, OrderDto> {
 
 
