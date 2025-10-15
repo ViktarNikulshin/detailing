@@ -61,6 +61,10 @@ public class OrderService {
         Order order = orderMapper.dtoToDomain(orderDto);
         order.setId(id);
         order.setCreatedAt(LocalDateTime.now());
+        if (orderDto.getMasterIds() != null && !orderDto.getMasterIds().isEmpty()) {
+            List<User> masters = userService.getUsersByIds(orderDto.getMasterIds());
+            order.setMasters(masters);
+        }
         order.setStatus(currentStatus(id));
         order.getWorks().forEach(work -> work.setOrder(order));
         return orderMapper.domainToDto(orderRepository.save(order));
