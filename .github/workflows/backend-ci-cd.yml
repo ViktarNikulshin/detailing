@@ -56,7 +56,7 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           # Source: Ваш собранный WAR-файл (путь взят из env)
           source: "${{ env.JAVA_WAR_PATH }}"
-          target: "${{ env.REMOTE_DIR }}/build/libs/"
+          target: "${{ env.REMOTE_DIR }}"
 
       # ==================================
       # 3. ПОЛНЫЙ ПЕРЕЗАПУСК СТЕКА DOCKER COMPOSE
