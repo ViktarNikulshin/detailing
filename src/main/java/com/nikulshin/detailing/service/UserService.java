@@ -1,17 +1,22 @@
 package com.nikulshin.detailing.service;
 
+import com.nikulshin.detailing.mapper.RoleMapper;
 import com.nikulshin.detailing.mapper.UserMapper;
+import com.nikulshin.detailing.model.domain.Role;
 import com.nikulshin.detailing.model.domain.User;
+import com.nikulshin.detailing.model.dto.RoleDto;
 import com.nikulshin.detailing.model.dto.UserDto;
+import com.nikulshin.detailing.repository.RoleRepository;
 import com.nikulshin.detailing.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
@@ -19,6 +24,11 @@ public class UserService {
     private final UserRepository userRepository;
     private final UserMapper userMapper;
     private final PasswordEncoder passwordEncoder;
+    private final RoleRepository roleRepository;
+    private final RoleMapper roleMapper;
+
+    @Value("${app.default-password}")
+    private String defaultPassword;
 
     public List<UserDto> findAll() {
         return userMapper.domainsToDtos(userRepository.findAll());
@@ -28,8 +38,8 @@ public class UserService {
         return userMapper.domainsToDtos(userRepository.findAllByRole(code));
     }
 
-    public User getUserById(Long id) {
-        return userRepository.findById(id).orElse(null);
+    public UserDto getUserById(Long id) {
+        return userMapper.domainToDto(userRepository.findById(id).orElse(null));
     }
 
     public Optional<User> findByUsername(String username) {
@@ -49,27 +59,33 @@ public class UserService {
         });
     }
 
-    /**
-     * Метод для смены пароля пользователя.
-     *
-     * @param username    Имя пользователя, для которого меняется пароль.
-     * @param oldPassword Текущий пароль для проверки.
-     * @param newPassword Новый пароль.
-     * @throws RuntimeException если пользователь не найден или старый пароль неверен.
-     */
     @Transactional
     public void changePassword(String username, String oldPassword, String newPassword) {
-        // Находим пользователя по имени
         User user = findByUsername(username)
                 .orElseThrow(() -> new RuntimeException("User not found with username: " + username));
 
-        // Проверяем, совпадает ли предоставленный старый пароль с сохраненным
         if (!passwordEncoder.matches(oldPassword, user.getPassword())) {
             throw new RuntimeException("Invalid old password");
         }
 
-        // Хэшируем новый пароль и сохраняем пользователя
         user.setPassword(passwordEncoder.encode(newPassword));
+        userRepository.save(user);
+    }
+
+    public List<RoleDto> getAllRole() {
+        return roleMapper.domainsToDtos(roleRepository.findAll());
+    }
+
+    public UserDto updateUserRoles(Long id, List<Long> roleIds) {
+        Set<Role> roles = roleRepository.findALLByIdIn(roleIds);
+        User user = userRepository.findById(id).orElseThrow(() -> new RuntimeException("User not found with username: " + id));
+        user.setRoles(roles);
+       return userMapper.domainToDto( userRepository.save(user));
+    }
+
+    public void createUser(UserDto userDto) {
+        User user = userMapper.dtoToDomain(userDto);
+        user.setPassword(passwordEncoder.encode(defaultPassword));
         userRepository.save(user);
     }
 }
