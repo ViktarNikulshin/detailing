@@ -31,6 +31,14 @@ public class Work {
     @Column(name = "comment")
     private String comment;
 
+    // Назначения мастеров на работу (One-to-Many к новой связующей сущности) - UPDATED
+    @OneToMany(mappedBy = "work", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<WorkMasterAssignment> assignments = new ArrayList<>();
+
+    // Стоимость работы - Оставлено общим для работы
+    @Column(name = "cost")
+    private Integer cost;
+
     // Дополнительные материалы/типы для этой работы (многие-ко-многим)
     @ManyToMany
     @JoinTable(

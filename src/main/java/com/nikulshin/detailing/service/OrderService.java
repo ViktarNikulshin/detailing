@@ -23,13 +23,14 @@ public class OrderService {
 
     public OrderDto createOrder(OrderDto orderDto) {
         Order order = orderMapper.dtoToDomain(orderDto);
-        if (orderDto.getMasterIds() != null && !orderDto.getMasterIds().isEmpty()) {
-            List<User> masters = userService.getUsersByIds(orderDto.getMasterIds());
-            order.setMasters(masters);
-        }
         order.setCreatedAt(LocalDateTime.now());
         order.setStatus(OrderStatus.NEW);
         order.getWorks().forEach(work -> work.setOrder(order));
+        order.getWorks().forEach(work -> {
+            work.getAssignments().forEach(assignment -> {
+                assignment.setWork(work);
+            });
+        });
         return orderMapper.domainToDto(orderRepository.save(order));
     }
 
@@ -61,12 +62,13 @@ public class OrderService {
         Order order = orderMapper.dtoToDomain(orderDto);
         order.setId(id);
         order.setCreatedAt(LocalDateTime.now());
-        if (orderDto.getMasterIds() != null && !orderDto.getMasterIds().isEmpty()) {
-            List<User> masters = userService.getUsersByIds(orderDto.getMasterIds());
-            order.setMasters(masters);
-        }
         order.setStatus(currentStatus(id));
         order.getWorks().forEach(work -> work.setOrder(order));
+        order.getWorks().forEach(work -> {
+            work.getAssignments().forEach(assignment -> {
+                assignment.setWork(work);
+            });
+        });
         return orderMapper.domainToDto(orderRepository.save(order));
     }
 
