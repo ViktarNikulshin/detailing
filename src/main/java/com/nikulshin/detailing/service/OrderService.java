@@ -39,9 +39,9 @@ public class OrderService {
         if (masterId != null) {
             orders = orders
                     .stream()
-                    .filter(o -> o.getMasters()
-                            .stream()
-                            .map(User::getId)
+                    .filter(o -> o.getWorks()
+                            .stream().flatMap( w -> w.getAssignments().stream())
+                            .map(a -> a.getMaster().getId())
                             .toList().contains(masterId))
                     .toList();
         }
