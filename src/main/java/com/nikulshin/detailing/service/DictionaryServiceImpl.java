@@ -4,13 +4,14 @@ import com.nikulshin.detailing.mapper.DictionaryMapper;
 import com.nikulshin.detailing.mapper.DictionaryRequestMapper;
 import com.nikulshin.detailing.model.domain.Dictionary;
 import com.nikulshin.detailing.model.dto.DictionaryDto;
-import com.nikulshin.detailing.model.dto.DictionaryRequest;
 import com.nikulshin.detailing.repository.DictionaryRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -24,7 +25,7 @@ public class DictionaryServiceImpl implements DictionaryService {
 
     @Override
     @Transactional
-    public DictionaryDto createDictionaryItem(DictionaryRequest request) {
+    public DictionaryDto createDictionaryItem(DictionaryDto request) {
         validateDictionaryItem(request, null);
 
         Dictionary dictionary = dictionaryRequestMapper.dtoToDomain(request);
@@ -36,11 +37,26 @@ public class DictionaryServiceImpl implements DictionaryService {
 
     @Override
     @Transactional
-    public DictionaryDto updateDictionaryItem(Long id, DictionaryRequest request) {
+    public DictionaryDto updateDictionaryItem(Long id, DictionaryDto request) {
         Dictionary dictionary = getDictionaryEntityById(id);
         validateDictionaryItem(request, id);
 
         dictionaryRequestMapper.updateEntityFromRequest(request, dictionary);
+        if (request.getParts() != null && !request.getParts().isEmpty()) {
+            dictionaryRepository.deleteAll(dictionaryRepository.findByType(request.getCode()));
+            request.getParts().forEach(requestPart -> {
+                Dictionary dictionaryPart = new Dictionary();
+                dictionaryPart.setCode(requestPart.getCode());
+                dictionaryPart.setName(requestPart.getName());
+                dictionaryPart.setType(request.getCode());
+                dictionaryPart.setCreatedAt(LocalDateTime.now());
+                dictionaryPart.setUpdatedAt(LocalDateTime.now());
+                dictionaryPart.setIsActive(true);
+                dictionaryRepository.save(dictionaryPart);
+            });
+        } else {
+            dictionaryRepository.deleteAll(dictionaryRepository.findByType(request.getCode()));
+        }
         Dictionary updatedDictionary = dictionaryRepository.save(dictionary);
 
         log.info("Updated dictionary item: {}", updatedDictionary);
@@ -57,13 +73,26 @@ public class DictionaryServiceImpl implements DictionaryService {
     @Override
     @Transactional(readOnly = true)
     public List<DictionaryDto> getAllDictionaryItems() {
-        return dictionaryMapper.domainsToDtos(dictionaryRepository.findAll());
+        List<Dictionary> list = dictionaryRepository.findAll();
+        return setDictionaryParts(list);
     }
 
     @Override
     @Transactional(readOnly = true)
     public List<DictionaryDto> getDictionaryItemsByType(String type) {
-        return dictionaryMapper.domainsToDtos(dictionaryRepository.findByType(type));
+        List<Dictionary> list = dictionaryRepository.findByType(type);
+        return setDictionaryParts(list);
+    }
+
+    private List<DictionaryDto> setDictionaryParts(List<Dictionary> list) {
+        List<DictionaryDto> dtos = dictionaryMapper.domainsToDtos(list);
+        dtos.forEach(dto -> {
+            dto.setParts(new ArrayList<>());
+            dictionaryRepository.findByType(dto.getCode()).forEach(dto2 -> {
+                dto.getParts().add(dictionaryMapper.domainToDto(dto2));
+            });
+        });
+        return dtos;
     }
 
     @Override
@@ -76,6 +105,7 @@ public class DictionaryServiceImpl implements DictionaryService {
     @Transactional
     public void deleteDictionaryItem(Long id) {
         Dictionary dictionary = getDictionaryEntityById(id);
+        dictionaryRepository.deleteAll(dictionaryRepository.findByType(dictionary.getCode()));
         dictionaryRepository.delete(dictionary);
         log.info("Deleted dictionary item with id: {}", id);
     }
@@ -101,7 +131,7 @@ public class DictionaryServiceImpl implements DictionaryService {
         return dictionaryRepository.existsByCodeAndType(code, type);
     }
 
-    private void validateDictionaryItem(DictionaryRequest request, Long id) {
+    private void validateDictionaryItem(DictionaryDto request, Long id) {
         boolean exists;
         if (id == null) {
             exists = dictionaryRepository.existsByCodeAndType(request.getCode(), request.getType());

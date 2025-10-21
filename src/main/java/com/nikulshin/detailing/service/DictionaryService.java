@@ -7,9 +7,9 @@ import com.nikulshin.detailing.model.dto.DictionaryRequest;
 import java.util.List;
 
 public interface DictionaryService {
-    DictionaryDto createDictionaryItem(DictionaryRequest request);
+    DictionaryDto createDictionaryItem(DictionaryDto request);
 
-    DictionaryDto updateDictionaryItem(Long id, DictionaryRequest request);
+    DictionaryDto updateDictionaryItem(Long id, DictionaryDto request);
 
     DictionaryDto getDictionaryItemById(Long id);
 

@@ -25,17 +25,17 @@ public class DictionaryController {
 
     private final DictionaryService dictionaryService;
 
-    @PostMapping
+    @PostMapping("/work-types")
     public ResponseEntity<DictionaryDto> createDictionaryItem(
-            @Valid @RequestBody DictionaryRequest request) {
+            @Valid @RequestBody DictionaryDto request) {
         DictionaryDto response = dictionaryService.createDictionaryItem(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
-    @PutMapping("/{id}")
+    @PutMapping("/work-types/{id}")
     public ResponseEntity<DictionaryDto> updateDictionaryItem(
             @PathVariable Long id,
-            @Valid @RequestBody DictionaryRequest request) {
+            @Valid @RequestBody DictionaryDto request) {
         DictionaryDto response = dictionaryService.updateDictionaryItem(id, request);
         return ResponseEntity.ok(response);
     }
@@ -66,7 +66,7 @@ public class DictionaryController {
         return ResponseEntity.ok(responses);
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/work-types/{id}")
     public ResponseEntity<Void> deleteDictionaryItem(@PathVariable Long id) {
         dictionaryService.deleteDictionaryItem(id);
         return ResponseEntity.noContent().build();
