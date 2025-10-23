@@ -1,7 +1,6 @@
 package com.nikulshin.detailing.controller;
 
 import com.nikulshin.detailing.model.dto.DictionaryDto;
-import com.nikulshin.detailing.model.dto.DictionaryRequest;
 import com.nikulshin.detailing.service.DictionaryService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
