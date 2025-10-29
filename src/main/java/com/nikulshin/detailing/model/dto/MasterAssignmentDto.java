@@ -6,5 +6,5 @@ import lombok.Data;
 public class MasterAssignmentDto {
     private Long id;
     private UserDto master;
-    private Integer salaryPercent;
+    private Double salaryPercent;
 }

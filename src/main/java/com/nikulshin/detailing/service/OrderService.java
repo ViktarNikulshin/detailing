@@ -3,7 +3,6 @@ package com.nikulshin.detailing.service;
 import com.nikulshin.detailing.mapper.OrderMapper;
 import com.nikulshin.detailing.model.domain.Order;
 import com.nikulshin.detailing.model.domain.OrderStatus;
-import com.nikulshin.detailing.model.domain.User;
 import com.nikulshin.detailing.model.dto.OrderDto;
 import com.nikulshin.detailing.repository.OrderRepository;
 import jakarta.persistence.EntityNotFoundException;
@@ -13,13 +12,14 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import static com.nikulshin.detailing.model.domain.OrderStatus.CANCELLED;
+
 @Service
 @RequiredArgsConstructor
 public class OrderService {
 
     private final OrderRepository orderRepository;
     private final OrderMapper orderMapper;
-    private final UserService userService;
 
     public OrderDto createOrder(OrderDto orderDto) {
         Order order = orderMapper.dtoToDomain(orderDto);
@@ -36,21 +36,24 @@ public class OrderService {
 
     public List<OrderDto> getOrdersByDateRange(LocalDateTime start, LocalDateTime end, Long masterId, String status) {
         List<Order> orders = orderRepository.findByExecutionDateBetween(start, end);
+        if (status != null) {
+            return orderMapper.domainsToDtos(orders.stream()
+                    .filter(o -> o.getStatus() == OrderStatus.valueOf(status))
+                    .toList());
+        }
         if (masterId != null) {
-            orders = orders
+            return orderMapper.domainsToDtos(orders
                     .stream()
                     .filter(o -> o.getWorks()
-                            .stream().flatMap( w -> w.getAssignments().stream())
+                            .stream().flatMap(w -> w.getAssignments().stream())
                             .map(a -> a.getMaster().getId())
                             .toList().contains(masterId))
-                    .toList();
+                    .toList());
         }
-        if (status != null) {
-            orders = orders.stream()
-                    .filter(o -> o.getStatus() == OrderStatus.valueOf(status))
-                    .toList();
-        }
-        return orderMapper.domainsToDtos(orders);
+        return orderMapper.domainsToDtos(orders
+                .stream()
+                .filter(o -> o.getStatus() != CANCELLED)
+                .toList());
     }
 
     public OrderDto getOrdersById(Long orderId) {
