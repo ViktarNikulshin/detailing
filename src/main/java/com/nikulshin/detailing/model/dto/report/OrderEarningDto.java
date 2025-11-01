@@ -23,6 +23,9 @@ public class OrderEarningDto {
     @JsonProperty("clientName")
     private String clientName;
 
+    @JsonProperty("clientCar")
+    private String clientCar;
+
     // Используем String для соответствия "ISO-строке" или LocalDate/LocalDateTime
     // Если в ISO-строке только дата (например, "2024-05-20"), используйте LocalDate
     @JsonProperty("executionDate")

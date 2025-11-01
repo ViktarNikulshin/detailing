@@ -149,6 +149,7 @@ public class ReportMapper {
                                 return OrderEarningDto.builder()
                                         .orderId(order.getId().intValue())
                                         .clientName(order.getClientName())
+                                        .clientCar(order.getCarBrand().getName())
                                         .executionDate(order.getExecutionDate().format(DATE_FORMATTER))
                                         .earning(earning)
                                         .build();
