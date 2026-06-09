@@ -29,4 +29,7 @@ public class WorkMasterAssignment {
     // Индивидуальный процент на ЗП для этого мастера по этой работе
     @Column(name = "salary_percent", nullable = false)
     private Double salaryPercent;
+
+    // ЗП для этого мастера по этой работе
+    private Integer salary;
 }

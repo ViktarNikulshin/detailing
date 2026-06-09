@@ -8,8 +8,10 @@ import com.nikulshin.detailing.model.dto.RoleDto;
 import com.nikulshin.detailing.model.dto.UserDto;
 import com.nikulshin.detailing.repository.RoleRepository;
 import com.nikulshin.detailing.repository.UserRepository;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -31,7 +33,7 @@ public class UserService {
     private String defaultPassword;
 
     public List<UserDto> findAll() {
-        return userMapper.domainsToDtos(userRepository.findAll());
+        return userMapper.domainsToDtos(userRepository.findAllByEnabledTrue());
     }
 
     public List<UserDto> findByRole(String code) {
@@ -40,6 +42,9 @@ public class UserService {
 
     public UserDto getUserById(Long id) {
         return userMapper.domainToDto(userRepository.findById(id).orElse(null));
+    }
+    public User getById (Long id) {
+        return  userRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("User id = " + id + " not found "));
     }
 
     public Optional<User> findByUsername(String username) {
@@ -86,6 +91,12 @@ public class UserService {
     public void createUser(UserDto userDto) {
         User user = userMapper.dtoToDomain(userDto);
         user.setPassword(passwordEncoder.encode(defaultPassword));
+        userRepository.save(user);
+    }
+
+    public void deletedUser(Long id) {
+        User user = userRepository.findById(id).orElseThrow(() -> new UsernameNotFoundException("User not found"));
+        user.setEnabled(false);
         userRepository.save(user);
     }
 }

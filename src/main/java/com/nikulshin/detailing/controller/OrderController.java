@@ -1,11 +1,9 @@
 package com.nikulshin.detailing.controller;
 
-import com.nikulshin.detailing.model.domain.Order;
 import com.nikulshin.detailing.model.dto.OrderDto;
 import com.nikulshin.detailing.service.OrderService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -25,13 +23,11 @@ public class OrderController {
     private final OrderService orderService;
 
     @PostMapping
-    @PreAuthorize("hasAnyRole('MANAGER', 'ADMIN')")
     public ResponseEntity<OrderDto> createOrder(@RequestBody OrderDto order) {
         return ResponseEntity.ok(orderService.createOrder(order));
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("hasAnyRole('MANAGER', 'ADMIN')")
     public ResponseEntity<OrderDto> updateOrder(@PathVariable Long id, @RequestBody OrderDto order) {
         return ResponseEntity.ok(orderService.updateOrder(id, order));
     }

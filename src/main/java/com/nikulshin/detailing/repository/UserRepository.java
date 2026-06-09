@@ -12,9 +12,7 @@ import java.util.Optional;
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {
     Optional<User> findByUsername(String username);
-    boolean existsByUsername(String username);
-    @Query(value = "select count (id) from users where role = ?1", nativeQuery = true)
-    long countByRole(String role);
+    List<User> findAllByEnabledTrue();
     @Query("SELECT u FROM User u JOIN FETCH u.roles WHERE u.username = :username")
     Optional<User> findByUsernameWithRoles(@Param("username") String username);
     @Query("SELECT u FROM User u JOIN FETCH u.roles r WHERE r.name = :code")

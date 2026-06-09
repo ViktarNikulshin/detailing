@@ -63,4 +63,9 @@ public class UserController {
         userService.changePassword(username, oldPassword, newPassword);
         return ResponseEntity.ok().build();
     }
+    @GetMapping("delete/{id}")
+    public ResponseEntity<String> deletedUser(@PathVariable Long id) {
+        userService.deletedUser(id);
+        return ResponseEntity.ok().build();
+    }
 }
