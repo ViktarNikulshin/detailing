@@ -39,10 +39,8 @@ public class ReportService {
 
     public void saveMasterSalary(MasterSalaryDto masterSalaryDto) {
         User master = userService.getById(masterSalaryDto.getMasterId());
-        Dictionary dictionary = dictionaryService.getDictionaryEntityById(masterSalaryDto.getWorkTypeId());
         MasterSalaryLog masterSalaryLog = masterSalaryMapper.dtoToDomain(masterSalaryDto);
         masterSalaryLog.setMaster(master);
-        masterSalaryLog.setWorkType(dictionary);
         masterSalaryRepository.save(masterSalaryLog);
     }
 
@@ -52,10 +50,8 @@ public class ReportService {
 
     public void updateMasterSalary(Long id, MasterSalaryDto masterSalaryDto) {
         User master = userService.getById(masterSalaryDto.getMasterId());
-        Dictionary dictionary = dictionaryService.getDictionaryEntityById(masterSalaryDto.getWorkTypeId());
         MasterSalaryLog masterSalaryLog = masterSalaryMapper.dtoToDomain(masterSalaryDto);
         masterSalaryLog.setMaster(master);
-        masterSalaryLog.setWorkType(dictionary);
         masterSalaryLog.setId(id);
         masterSalaryRepository.save(masterSalaryLog);
 

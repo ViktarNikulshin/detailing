@@ -15,9 +15,11 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Random;
 import java.util.Set;
 
 @Service
@@ -91,6 +93,11 @@ public class UserService {
     public void createUser(UserDto userDto) {
         User user = userMapper.dtoToDomain(userDto);
         user.setPassword(passwordEncoder.encode(defaultPassword));
+        if (user.getUsername() == null || !StringUtils.hasText(user.getUsername())) {
+            user.setUsername(new Random().ints(6, 'a', 'z' + 1)
+                    .collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append)
+                    .toString());
+        }
         userRepository.save(user);
     }
 

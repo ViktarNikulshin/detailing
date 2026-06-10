@@ -25,10 +25,8 @@ public class MasterSalaryLog {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // Связь к работе
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "work_type_dictionary_id")
-    private Dictionary workType;
+
+    private String workTypeName;
 
     // Связь к мастеру (User)
     @ManyToOne(fetch = FetchType.EAGER)

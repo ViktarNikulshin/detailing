@@ -9,7 +9,6 @@ import java.time.LocalDateTime;
 public class MasterSalaryDto {
     private Long id;
     private Long masterId;
-    private Long workTypeId;
     private String workTypeName;
     private LocalDateTime date;
     private String carModel;

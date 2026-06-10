@@ -8,8 +8,6 @@ import org.mapstruct.Mapping;
 @Mapper(componentModel = "spring", uses = {DictionaryMapper.class, UserMapper.class})
 public interface MasterSalaryMapper extends BaseMapper<MasterSalaryLog, MasterSalaryDto> {
     @Mapping(target = "masterId", source = "master.id")
-    @Mapping(target = "workTypeId", source = "workType.id")
-    @Mapping(target = "workTypeName", source = "workType.name")
     @Override
     MasterSalaryDto domainToDto(MasterSalaryLog entity);
 
