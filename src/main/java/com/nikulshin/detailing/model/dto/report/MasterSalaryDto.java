@@ -1,16 +1,17 @@
 package com.nikulshin.detailing.model.dto.report;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.RequiredArgsConstructor;
 
-import java.time.LocalDateTime;
+import java.util.List;
 
 @Data
+@AllArgsConstructor
+@RequiredArgsConstructor
+@Builder
 public class MasterSalaryDto {
-    private Long id;
-    private Long masterId;
-    private String workTypeName;
-    private LocalDateTime date;
-    private String carModel;
-    private Integer salary;
+    private Integer previousBalance;
+    private List<MasterSalaryRecordDto> records;
 }

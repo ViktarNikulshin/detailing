@@ -1,14 +1,14 @@
 package com.nikulshin.detailing.mapper;
 
 import com.nikulshin.detailing.model.domain.MasterSalaryLog;
-import com.nikulshin.detailing.model.dto.report.MasterSalaryDto;
+import com.nikulshin.detailing.model.dto.report.MasterSalaryRecordDto;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
 @Mapper(componentModel = "spring", uses = {DictionaryMapper.class, UserMapper.class})
-public interface MasterSalaryMapper extends BaseMapper<MasterSalaryLog, MasterSalaryDto> {
+public interface MasterSalaryMapper extends BaseMapper<MasterSalaryLog, MasterSalaryRecordDto> {
     @Mapping(target = "masterId", source = "master.id")
     @Override
-    MasterSalaryDto domainToDto(MasterSalaryLog entity);
+    MasterSalaryRecordDto domainToDto(MasterSalaryLog entity);
 
 }

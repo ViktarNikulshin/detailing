@@ -3,6 +3,7 @@ package com.nikulshin.detailing.controller;
 
 import com.nikulshin.detailing.model.dto.report.MasterDetailReportDto;
 import com.nikulshin.detailing.model.dto.report.MasterSalaryDto;
+import com.nikulshin.detailing.model.dto.report.MasterSalaryRecordDto;
 import com.nikulshin.detailing.model.dto.report.MasterWeeklyReportDto;
 import com.nikulshin.detailing.service.ReportService;
 import lombok.RequiredArgsConstructor;
@@ -40,16 +41,18 @@ public class ReportController {
     }
 
     @GetMapping("/masters-salary-log")
-    public ResponseEntity<List<MasterSalaryDto>> getMasterSalaryLog(@RequestParam Long id,
-                                                                    @RequestParam LocalDateTime start,
-                                                                    @RequestParam LocalDateTime end) {
+    public ResponseEntity<MasterSalaryDto> getMasterSalaryLog(@RequestParam Long id,
+                                                              @RequestParam LocalDateTime start,
+                                                              @RequestParam LocalDateTime end) {
         return ResponseEntity.ok(reportService.getMasterSalaryLog(id, start, end));
     }
+
     @PostMapping("/masters-salary-log")
-    public ResponseEntity<String> getMasterSalaryLog(@RequestBody MasterSalaryDto masterSalaryDto) {
+    public ResponseEntity<String> getMasterSalaryLog(@RequestBody MasterSalaryRecordDto masterSalaryDto) {
         reportService.saveMasterSalary(masterSalaryDto);
         return ResponseEntity.ok().build();
     }
+
     @DeleteMapping("/masters-salary-log/{id}")
     public ResponseEntity<String> deleteMasterSalaryLog(@PathVariable Long id) {
         reportService.deleteMasterSalary(id);
@@ -57,8 +60,17 @@ public class ReportController {
     }
 
     @PutMapping("/masters-salary-log/{id}")
-    public ResponseEntity<String> updateMasterSalaryLog(@PathVariable Long id, @RequestBody MasterSalaryDto masterSalaryDto) {
+    public ResponseEntity<String> updateMasterSalaryLog(@PathVariable Long id, @RequestBody MasterSalaryRecordDto masterSalaryDto) {
         reportService.updateMasterSalary(id, masterSalaryDto);
+        return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/masters-salary-balance/")
+    public ResponseEntity<String> updateMasterSalaryLog(@RequestParam Long id,
+                                                        @RequestParam Integer year,
+                                                        @RequestParam Integer month,
+                                                        @RequestParam Integer previousBalance) {
+        reportService.updateMasterBalance(id, year, month, previousBalance);
         return ResponseEntity.ok().build();
     }
 }
