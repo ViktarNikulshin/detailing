@@ -11,15 +11,14 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import lombok.ToString;
 
 import java.time.LocalDateTime;
-import java.util.Date;
 
+@EqualsAndHashCode(callSuper = true)
 @Entity
 @Table(name = "master_salary_log")
 @Data
-public class MasterSalaryLog {
+public class MasterSalaryLog extends Auditable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

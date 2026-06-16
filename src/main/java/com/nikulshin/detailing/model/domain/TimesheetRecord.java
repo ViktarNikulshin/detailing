@@ -19,7 +19,7 @@ import java.time.LocalDate;
 })
 @Getter
 @Setter
-public class TimesheetRecord {
+public class TimesheetRecord extends Auditable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
