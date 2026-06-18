@@ -30,6 +30,12 @@ public class FinanceController {
         return ResponseEntity.ok(financeService.saveRecord(dto));
     }
 
+    @DeleteMapping("/records/{id}")
+    public ResponseEntity<String> deletedRecord(@PathVariable Long id) {
+        financeService.deleteRecord(id);
+        return ResponseEntity.ok().build();
+    }
+
     // Обновить баланс на начало периода
     @PostMapping("/balance")
     public ResponseEntity<Void> updateBalance(

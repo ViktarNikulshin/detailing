@@ -13,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.YearMonth;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -38,6 +39,7 @@ public class FinanceService {
         List<FinanceRecordDto> records = recordRepository.findByMonthRange(start, end)
                 .stream()
                 .map(this::convertToDto)
+                .sorted(Comparator.comparing(FinanceRecordDto::getDate))
                 .collect(Collectors.toList());
 
         return new FinanceMonthSummaryDto(startingBalance, records);
@@ -73,6 +75,10 @@ public class FinanceService {
 
         FinanceRecord saved = recordRepository.save(record);
         return convertToDto(saved);
+    }
+    @Transactional
+    public void deleteRecord(Long id) {
+        recordRepository.deleteById(id);
     }
 
     private FinanceRecordDto convertToDto(FinanceRecord entity) {

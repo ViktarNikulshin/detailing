@@ -16,6 +16,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 
@@ -38,7 +39,11 @@ public class ReportService {
 
     public MasterSalaryDto getMasterSalaryLog(Long id, LocalDateTime start, LocalDateTime end) {
         User master = userService.getById(id);
-        List<MasterSalaryRecordDto> records = masterSalaryMapper.domainsToDtos(masterSalaryRepository.findAllByMasterIsAndDateAfterAndDateBefore(master, start, end));
+        List<MasterSalaryRecordDto> records = masterSalaryMapper
+                .domainsToDtos(masterSalaryRepository.findAllByMasterIsAndDateAfterAndDateBefore(master, start, end))
+                .stream()
+                .sorted(Comparator.comparing(MasterSalaryRecordDto::getDate))
+                .toList();
         Integer previousBalance = masterSalaryBalanceRepository
                 .findByMasterAndYearAndMonth(master, start.getYear(), start.getMonthValue())
                 .map(MasterSalaryBalance::getPreviousBalance)
