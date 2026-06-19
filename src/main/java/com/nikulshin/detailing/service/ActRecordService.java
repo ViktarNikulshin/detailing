@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Comparator;
 import java.util.List;
 
 @Service
@@ -16,7 +17,10 @@ public class ActRecordService {
 
     @Transactional(readOnly = true)
     public List<ActRecord> getActsSummary(int year, int month) {
-        return actRecordRepository.findByYearAndMonth(year, month);
+        return actRecordRepository.findByYearAndMonth(year, month)
+                .stream()
+                .sorted(Comparator.comparing(ActRecord::getDate))
+                .toList();
     }
 
     @Transactional
