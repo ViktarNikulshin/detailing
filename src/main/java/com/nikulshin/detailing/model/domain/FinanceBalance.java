@@ -1,6 +1,5 @@
 package com.nikulshin.detailing.model.domain;
 
-import com.nikulshin.detailing.model.FinanceType;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;

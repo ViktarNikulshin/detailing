@@ -1,4 +1,4 @@
-package com.nikulshin.detailing.model;
+package com.nikulshin.detailing.model.domain;
 
 public enum FinanceType {
     CASH,      // Наличные

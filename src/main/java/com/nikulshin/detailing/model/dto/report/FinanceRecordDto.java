@@ -1,6 +1,6 @@
 package com.nikulshin.detailing.model.dto.report;
 
-import com.nikulshin.detailing.model.FinanceType;
+import com.nikulshin.detailing.model.domain.FinanceType;
 import lombok.Data;
 import java.math.BigDecimal;
 import java.time.LocalDate;

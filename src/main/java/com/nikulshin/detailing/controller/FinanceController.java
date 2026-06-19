@@ -1,6 +1,6 @@
 package com.nikulshin.detailing.controller;
 
-import com.nikulshin.detailing.model.FinanceType;
+import com.nikulshin.detailing.model.domain.FinanceType;
 import com.nikulshin.detailing.model.dto.report.FinanceMonthSummaryDto;
 import com.nikulshin.detailing.model.dto.report.FinanceRecordDto;
 import com.nikulshin.detailing.service.FinanceService;

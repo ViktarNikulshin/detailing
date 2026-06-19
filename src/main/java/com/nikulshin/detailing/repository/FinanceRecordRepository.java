@@ -1,6 +1,6 @@
 package com.nikulshin.detailing.repository;
 
-import com.nikulshin.detailing.model.FinanceType;
+import com.nikulshin.detailing.model.domain.FinanceType;
 import com.nikulshin.detailing.model.domain.FinanceRecord;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
