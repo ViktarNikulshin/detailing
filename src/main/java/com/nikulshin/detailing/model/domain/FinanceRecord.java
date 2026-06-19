@@ -1,5 +1,6 @@
 package com.nikulshin.detailing.model.domain;
 
+import com.nikulshin.detailing.model.FinanceType;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -43,4 +44,8 @@ public class FinanceRecord extends Auditable { // Используем созд�
 
     @Column(name = "exp_other", precision = 12, scale = 2)
     private BigDecimal expOther; // Прочее
+    
+    @Enumerated(EnumType.STRING)
+    @Column(name = "finance_type", nullable = false)
+    private FinanceType financeType;
 }

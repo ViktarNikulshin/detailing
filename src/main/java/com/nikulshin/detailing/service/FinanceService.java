@@ -1,5 +1,6 @@
 package com.nikulshin.detailing.service;
 
+import com.nikulshin.detailing.model.FinanceType;
 import com.nikulshin.detailing.model.domain.FinanceBalance;
 import com.nikulshin.detailing.model.domain.FinanceRecord;
 import com.nikulshin.detailing.model.dto.report.FinanceMonthSummaryDto;
@@ -25,9 +26,9 @@ public class FinanceService {
     private final FinanceBalanceRepository balanceRepository;
 
     @Transactional(readOnly = true)
-    public FinanceMonthSummaryDto getMonthSummary(Integer year, Integer month) {
+    public FinanceMonthSummaryDto getMonthSummary(Integer year, Integer month, FinanceType type) {
         // 1. Получаем начальный баланс
-        BigDecimal startingBalance = balanceRepository.findByYearAndMonth(year, month)
+        BigDecimal startingBalance = balanceRepository.findByYearAndMonthAndFinanceType(year, month, type)
                 .map(FinanceBalance::getStartingBalance)
                 .orElse(BigDecimal.ZERO); // Если записи нет, по дефолту 0 (можно сделать логику переноса из прошлого месяца)
 
@@ -36,7 +37,7 @@ public class FinanceService {
         LocalDate start = yearMonth.atDay(1);
         LocalDate end = yearMonth.atEndOfMonth();
 
-        List<FinanceRecordDto> records = recordRepository.findByMonthRange(start, end)
+        List<FinanceRecordDto> records = recordRepository.findByMonthRange(start, end, type)
                 .stream()
                 .map(this::convertToDto)
                 .sorted(Comparator.comparing(FinanceRecordDto::getDate))
@@ -46,13 +47,14 @@ public class FinanceService {
     }
 
     @Transactional
-    public void updateStartingBalance(Integer year, Integer month, BigDecimal balanceAmount) {
-        FinanceBalance balance = balanceRepository.findByYearAndMonth(year, month)
+    public void updateStartingBalance(Integer year, Integer month, BigDecimal balanceAmount, FinanceType type) {
+        FinanceBalance balance = balanceRepository.findByYearAndMonthAndFinanceType(year, month, type)
                 .orElse(new FinanceBalance());
 
         balance.setYear(year);
         balance.setMonth(month);
         balance.setStartingBalance(balanceAmount);
+        balance.setFinanceType(type);
 
         balanceRepository.save(balance);
     }
@@ -72,6 +74,7 @@ public class FinanceService {
         record.setExpSalary(dto.getExpSalary());
         record.setExpTaxes(dto.getExpTaxes());
         record.setExpOther(dto.getExpOther());
+        record.setFinanceType(dto.getFinanceType());
 
         FinanceRecord saved = recordRepository.save(record);
         return convertToDto(saved);
@@ -93,6 +96,7 @@ public class FinanceService {
         dto.setExpSalary(entity.getExpSalary());
         dto.setExpTaxes(entity.getExpTaxes());
         dto.setExpOther(entity.getExpOther());
+        dto.setFinanceType(entity.getFinanceType());
         return dto;
     }
 }

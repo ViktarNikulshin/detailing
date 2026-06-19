@@ -1,5 +1,6 @@
 package com.nikulshin.detailing.controller;
 
+import com.nikulshin.detailing.model.FinanceType;
 import com.nikulshin.detailing.model.dto.report.FinanceMonthSummaryDto;
 import com.nikulshin.detailing.model.dto.report.FinanceRecordDto;
 import com.nikulshin.detailing.service.FinanceService;
@@ -20,8 +21,9 @@ public class FinanceController {
     @GetMapping("/summary")
     public ResponseEntity<FinanceMonthSummaryDto> getSummary(
             @RequestParam("year") Integer year,
-            @RequestParam("month") Integer month) {
-        return ResponseEntity.ok(financeService.getMonthSummary(year, month));
+            @RequestParam("month") Integer month,
+            @RequestParam("type") FinanceType type) {
+        return ResponseEntity.ok(financeService.getMonthSummary(year, month, type));
     }
 
     // Сохранить новую или обновить измененную запись
@@ -41,8 +43,9 @@ public class FinanceController {
     public ResponseEntity<Void> updateBalance(
             @RequestParam("year") Integer year,
             @RequestParam("month") Integer month,
-            @RequestParam("amount") BigDecimal amount) {
-        financeService.updateStartingBalance(year, month, amount);
+            @RequestParam("amount") BigDecimal amount,
+            @RequestParam("type") FinanceType type) {
+        financeService.updateStartingBalance(year, month, amount, type);
         return ResponseEntity.ok().build();
     }
 }
