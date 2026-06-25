@@ -11,6 +11,8 @@ import jakarta.persistence.Table;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
+import java.math.BigDecimal;
+
 @EqualsAndHashCode(callSuper = true)
 @Entity
 @Table(name = "master_salary_balance")
@@ -29,6 +31,7 @@ public class MasterSalaryBalance extends Auditable {
 
     private Integer month;
 
-    // ЗП для этого мастера по этой работе
-    private Integer previousBalance;
+    private BigDecimal previousBalance;
+
+    private BigDecimal interimPayments;
 }

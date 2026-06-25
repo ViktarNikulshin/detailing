@@ -12,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.YearMonth;
 import java.util.ArrayList;
@@ -35,15 +36,19 @@ public class TimesheetService {
         LocalDate start = yearMonth.atDay(1);
         LocalDate end = yearMonth.atEndOfMonth();
         User user = userService.getById(masterId);
-        Integer previousBalance = masterSalaryBalanceRepository
+        BigDecimal previousBalance = masterSalaryBalanceRepository
                 .findByMasterAndYearAndMonth(user, start.getYear(), start.getMonthValue())
                 .map(MasterSalaryBalance::getPreviousBalance)
-                .orElse(0);
+                .orElse(new BigDecimal(0));
+        BigDecimal interimPayments = masterSalaryBalanceRepository
+                .findByMasterAndYearAndMonth(user, start.getYear(), start.getMonthValue())
+                .map(MasterSalaryBalance::getInterimPayments)
+                .orElse(new BigDecimal(0));
         List<TimesheetRecord> records = repository.findByMasterIdAndRecordDateBetween(masterId, start, end);
         List<TimesheetDayDto> recordDto = records.stream()
                 .map(r -> new TimesheetDayDto(r.getRecordDate(), r.isAbsent(), r.getContentRub(), r.getSalaryRub()))
                 .toList();
-        return new UserTimesheetDto(previousBalance, recordDto);
+        return new UserTimesheetDto(previousBalance, interimPayments, recordDto);
 
     }
 

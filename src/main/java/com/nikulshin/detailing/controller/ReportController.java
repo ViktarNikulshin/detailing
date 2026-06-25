@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -69,8 +70,9 @@ public class ReportController {
     public ResponseEntity<String> updateMasterSalaryLog(@RequestParam Long id,
                                                         @RequestParam Integer year,
                                                         @RequestParam Integer month,
-                                                        @RequestParam Integer previousBalance) {
-        reportService.updateMasterBalance(id, year, month, previousBalance);
+                                                        @RequestParam BigDecimal previousBalance,
+                                                        @RequestParam(name = "interimPayments", required = false) BigDecimal interimPayments) {
+        reportService.updateMasterBalance(id, year, month, previousBalance, interimPayments);
         return ResponseEntity.ok().build();
     }
 }

@@ -15,6 +15,7 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.List;
@@ -44,10 +45,10 @@ public class ReportService {
                 .stream()
                 .sorted(Comparator.comparing(MasterSalaryRecordDto::getDate))
                 .toList();
-        Integer previousBalance = masterSalaryBalanceRepository
+        BigDecimal previousBalance = masterSalaryBalanceRepository
                 .findByMasterAndYearAndMonth(master, start.getYear(), start.getMonthValue())
                 .map(MasterSalaryBalance::getPreviousBalance)
-                .orElse(0);
+                .orElse(new BigDecimal(0));
 
         return MasterSalaryDto.builder()
                 .previousBalance(previousBalance)
@@ -75,19 +76,21 @@ public class ReportService {
 
     }
     @Transactional
-    public void updateMasterBalance(Long id, Integer year, Integer month, Integer previousBalance) {
+    public void updateMasterBalance(Long id, Integer year, Integer month, BigDecimal previousBalance, BigDecimal interimPayments) {
         User master = userService.getById(id);
         Optional<MasterSalaryBalance> balance = masterSalaryBalanceRepository
                 .findByMasterAndYearAndMonth(master, year, month);
         if (balance.isPresent()) {
             MasterSalaryBalance salaryBalance = balance.get();
             salaryBalance.setPreviousBalance(previousBalance);
+            salaryBalance.setInterimPayments(interimPayments);
         } else {
             MasterSalaryBalance newBalance = new MasterSalaryBalance();
             newBalance.setMaster(master);
             newBalance.setYear(year);
             newBalance.setMonth(month);
             newBalance.setPreviousBalance(previousBalance);
+            newBalance.setInterimPayments(interimPayments);
             masterSalaryBalanceRepository.save(newBalance);
         }
     }
