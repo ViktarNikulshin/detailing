@@ -15,6 +15,6 @@ public interface UserRepository extends JpaRepository<User, Long> {
     List<User> findAllByEnabledTrue();
     @Query("SELECT u FROM User u JOIN FETCH u.roles WHERE u.username = :username")
     Optional<User> findByUsernameWithRoles(@Param("username") String username);
-    @Query("SELECT u FROM User u JOIN FETCH u.roles r WHERE r.name = :code")
+    @Query("SELECT u FROM User u JOIN FETCH u.roles r WHERE r.name = :code and u.enabled")
     List<User> findAllByRole(String code);
 }
