@@ -12,6 +12,7 @@ import jakarta.persistence.Table;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @EqualsAndHashCode(callSuper = true)
@@ -38,5 +39,5 @@ public class MasterSalaryLog extends Auditable {
     private String carModel;
 
     // ЗП для этого мастера по этой работе
-    private Integer salary;
+    private BigDecimal salary;
 }
