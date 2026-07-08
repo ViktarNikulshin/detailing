@@ -1,7 +1,6 @@
 package com.nikulshin.detailing.service;
 
 import com.nikulshin.detailing.mapper.MasterSalaryMapper;
-import com.nikulshin.detailing.mapper.ReportMapper;
 import com.nikulshin.detailing.model.domain.MasterSalaryBalance;
 import com.nikulshin.detailing.model.domain.MasterSalaryLog;
 import com.nikulshin.detailing.model.domain.User;
@@ -24,18 +23,17 @@ import java.util.Optional;
 @Service
 @RequiredArgsConstructor
 public class ReportService {
-    private final ReportMapper reportMapper;
     private final MasterSalaryMapper masterSalaryMapper;
     private final MasterSalaryRepository masterSalaryRepository;
     private final UserService userService;
     private final MasterSalaryBalanceRepository masterSalaryBalanceRepository;
 
     public List<MasterWeeklyReportDto> getWeeklyReport(LocalDateTime start, LocalDateTime end) {
-        return reportMapper.getWeeklyReport(start, end);
+        return List.of();
     }
 
     public MasterDetailReportDto getMasterDetail(Long id, LocalDateTime start, LocalDateTime end) {
-        return reportMapper.getMasterDetailReport(id, start, end);
+        return null;
     }
 
     public MasterSalaryDto getMasterSalaryLog(Long id, LocalDateTime start, LocalDateTime end) {

@@ -17,11 +17,11 @@ public class OrderDto {
     private Long id;
     private String clientName;
     private String clientPhone;
-    private CarBrandDto carBrand;
-    private String vin;
+    private String carBrand;
     private List<WorkDto> works;
     private List<Long> masterIds;
-    private LocalDateTime executionDate;
+    private LocalDateTime arrivalDate;
+    private LocalDateTime deliveryDate;
     private OrderStatus status;
     private Integer orderCost;
     private DictionaryDto infoSource;

@@ -28,6 +28,9 @@ public class DictionaryRequest {
     @Size(max = 50, message = "Type must be less than 50 characters")
     private String type;
 
+    @Size(max = 8, message = "Type must be less than 50 characters")
+    private String color;
+
     private Boolean isActive;
     private Integer sortOrder;
 }

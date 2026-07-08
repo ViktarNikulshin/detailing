@@ -18,6 +18,7 @@ public class DictionaryDto {
     private String name;
     private String description;
     private String type;
+    private String color;
     private Boolean active;
     private List<String> tags;
     private List<DictionaryDto> parts;

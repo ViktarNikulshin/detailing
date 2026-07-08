@@ -35,6 +35,8 @@ public class Dictionary {
 
     @Column(name = "description", length = 500)
     private String description;
+    @Column(name = "color", length = 8)
+    private String color;
 
     @Column(name = "type", nullable = false, length = 50)
     private String type;

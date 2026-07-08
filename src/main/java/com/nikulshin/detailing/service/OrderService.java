@@ -26,29 +26,20 @@ public class OrderService {
         order.setCreatedAt(LocalDateTime.now());
         order.setStatus(OrderStatus.NEW);
         order.getWorks().forEach(work -> work.setOrder(order));
-        order.getWorks().forEach(work -> {
-            work.getAssignments().forEach(assignment -> {
-                assignment.setWork(work);
-            });
-        });
+
         return orderMapper.domainToDto(orderRepository.save(order));
     }
 
     public List<OrderDto> getOrdersByDateRange(LocalDateTime start, LocalDateTime end, Long masterId, String status) {
-        List<Order> orders = orderRepository.findByExecutionDateBetween(start, end);
+        List<Order> orders = orderRepository.findByArrivalDateBetween(start, end);
         if (status != null) {
             return orderMapper.domainsToDtos(orders.stream()
                     .filter(o -> o.getStatus() == OrderStatus.valueOf(status))
                     .toList());
         }
         if (masterId != null) {
-            return orderMapper.domainsToDtos(orders
-                    .stream()
-                    .filter(o -> o.getWorks()
-                            .stream().flatMap(w -> w.getAssignments().stream())
-                            .map(a -> a.getMaster().getId())
-                            .toList().contains(masterId))
-                    .toList());
+            return orderMapper.domainsToDtos(orders);
+
         }
         return orderMapper.domainsToDtos(orders
                 .stream()
@@ -67,11 +58,7 @@ public class OrderService {
         order.setCreatedAt(LocalDateTime.now());
         order.setStatus(currentStatus(id));
         order.getWorks().forEach(work -> work.setOrder(order));
-        order.getWorks().forEach(work -> {
-            work.getAssignments().forEach(assignment -> {
-                assignment.setWork(work);
-            });
-        });
+
         return orderMapper.domainToDto(orderRepository.save(order));
     }
 

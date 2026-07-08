@@ -30,18 +30,12 @@ public class Order {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
     private String clientName;
 
-    @Column(nullable = false)
     private String clientPhone;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "car_brand_id")
-    private CarBrand carBrand;
+    private String carBrand;
 
-    @Column(unique = true)
-    private String vin;
 
     @OneToMany(
             mappedBy = "order",
@@ -60,8 +54,9 @@ public class Order {
     )
     private List<User> masters;
 
-    @Column(nullable = false)
-    private LocalDateTime executionDate;
+
+    private LocalDateTime arrivalDate;
+    private LocalDateTime deliveryDate;
 
     private String beforePhotoPath;
     private String afterPhotoPath;
@@ -71,10 +66,5 @@ public class Order {
 
     private LocalDateTime createdAt;
     private Integer orderCost;
-    @ToString.Exclude
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "info_type_id")
-    private Dictionary infoSource;
-    @Column(name = "info_type_id", insertable = false, updatable = false)
-    private Long infoSourceId;
+
 }
