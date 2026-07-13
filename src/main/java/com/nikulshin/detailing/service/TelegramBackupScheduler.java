@@ -32,6 +32,8 @@ public class TelegramBackupScheduler {
 
     @Value("${spring.datasource.username}")
     private String dbUser;
+    @Value("${spring.datasource.password}")
+    private String dbPassword;
 
     @Value("${db.container.name}")
     private String containerName;
@@ -60,9 +62,17 @@ public class TelegramBackupScheduler {
         // 2. Формируем процесс выполнения pg_dump внутри Docker
         // Используем бинарный формат (-F c) и выгружаем только данные (--data-only)
         ProcessBuilder processBuilder = new ProcessBuilder(
-                "docker", "exec", "-i", containerName,
-                "pg_dump", "-U", dbUser, "-d", dbName, "--data-only", "-F", "c"
+                "pg_dump",
+                "-h", "postgres_db",  // Хост — это имя контейнера Postgres в сети Docker
+                "-p", "5432",         // Порт СУБД
+                "-U", dbUser,
+                "-d", dbName,
+                "--data-only",
+                "-F", "c"
         );
+
+// Передаем пароль через переменную окружения, чтобы pg_dump не спрашивал его в консоли
+        processBuilder.environment().put("PGPASSWORD", dbPassword);
 
         // Перенаправляем бинарный поток вывода напрямую в файл (Windows не испортит кодировку)
         processBuilder.redirectOutput(backupFile);

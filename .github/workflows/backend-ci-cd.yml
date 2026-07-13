@@ -73,6 +73,6 @@ jobs:
             
             # Остановка и запуск всего стека
             docker compose down 
-            docker compose up -d 
+            docker compose up -d --build 
             
             echo "All services restarted (Postgres, Tomcat, Nginx)."

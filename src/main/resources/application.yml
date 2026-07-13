@@ -23,13 +23,13 @@ app:
   default-password:
     password
   dump:
-    cron: 0 0 19 * * *
+    cron: 0 0 17 * * *
 telegram:
   bot:
-    token: 8854325292:AAGLSHbLpUbty8MqzCIzdO4yLdt0boTXsH8
+    token: ${TELEGRAM_BOT}
   chat:
-    id: -1004400159904
+    id: ${CHAT_ID}
 db:
   container:
     name: postgres_db
-  name: detailing
+  name: ${DB_NAME}
