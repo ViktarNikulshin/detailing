@@ -23,3 +23,14 @@ app:
     expiration-ms: 86400000 # 24 часа
   default-password:
     password
+  dump:
+    cron: 0 0 19 * * *
+telegram:
+  bot:
+    token: ${TELEGRAM_BOT}
+  chat:
+    id: ${CHAT_ID}
+db:
+  container:
+    name: postgres_db
+  name: ${DB_NAME}

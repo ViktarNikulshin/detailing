@@ -24,3 +24,12 @@ app:
   jwt:
     secret: your-very-secure-secret-key-at-least-256-bits-long
     expiration-ms: 86400000 # 24 часа
+telegram:
+  bot:
+    token: 8854325292:AAGLSHbLpUbty8MqzCIzdO4yLdt0boTXsH8
+  chat:
+    id: -1004400159904
+db:
+  container:
+    name: postgres_db_5433
+  name: detailing
