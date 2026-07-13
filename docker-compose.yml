@@ -55,20 +55,6 @@ services:
       - tomcat
     networks:
       - app-network
-  postgres_p5433:
-    image: postgres:18 # Рекомендуется использовать конкретную версию
-    container_name: postgres_db_5433
-    restart: always
-    ports:
-      - "5433:5432"
-    environment:
-      # Замените 'your_password' на надежный пароль
-      POSTGRES_DB: detailing
-      POSTGRES_USER: admin
-      POSTGRES_PASSWORD: passw0rd
-    volumes:
-      # Этот том сохранит данные вашей БД даже после перезапуска контейнера
-      - postgres-data:/var/lib/postgresql_5433/data
 
 # Определяем общую сеть для контейнеров
 networks:
