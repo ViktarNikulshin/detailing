@@ -1,4 +1,3 @@
-
 spring:
   datasource:
     driver-class-name: org.postgresql.Driver
@@ -27,10 +26,10 @@ app:
     cron: 0 0 19 * * *
 telegram:
   bot:
-    token: ${TELEGRAM_BOT}
+    token: 8854325292:AAGLSHbLpUbty8MqzCIzdO4yLdt0boTXsH8
   chat:
-    id: ${CHAT_ID}
+    id: -1004400159904
 db:
   container:
     name: postgres_db
-  name: ${DB_NAME}
+  name: detailing
