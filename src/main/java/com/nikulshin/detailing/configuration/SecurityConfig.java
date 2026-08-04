@@ -1,6 +1,5 @@
 package com.nikulshin.detailing.configuration;
 
-import com.nikulshin.detailing.service.JwtTokenProvider;
 import com.nikulshin.detailing.service.UserDetailsServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -31,12 +30,7 @@ import java.util.List;
 public class SecurityConfig {
 
     private final UserDetailsServiceImpl userDetailsService;
-    private final JwtTokenProvider jwtTokenProvider;
-
-    @Bean
-    public JwtAuthenticationFilter jwtAuthenticationFilter() {
-        return new JwtAuthenticationFilter(jwtTokenProvider, userDetailsService);
-    }
+    private final JwtAuthenticationFilter jwtAuthenticationFilter;
 
     @Bean
     public DaoAuthenticationProvider authenticationProvider() {
@@ -66,11 +60,11 @@ public class SecurityConfig {
                 )
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/auth/**").permitAll()
-                        .requestMatchers("/api/**").authenticated()
+                        .requestMatchers("/error").permitAll()
                         .anyRequest().authenticated()
                 )
                 .authenticationProvider(authenticationProvider())
-                .addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
+                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
@@ -78,11 +72,12 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
+        // ВАЖНО: Уберите слэш в конце IP-адреса для CORS ("http://5.180.181.92" вместо "http://5.180.181.92/")
         configuration.setAllowedOrigins(Arrays.asList(
                 "http://localhost",
                 "http://localhost:3000",
                 "http://www.cristal-car-order.by",
-                "http://5.180.181.92/"
+                "http://5.180.181.92"
         ));
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
         configuration.setAllowedHeaders(List.of("*"));

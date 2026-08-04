@@ -2,6 +2,7 @@ package com.nikulshin.detailing.controller;
 
 
 import com.nikulshin.detailing.model.dto.report.MasterDetailReportDto;
+import com.nikulshin.detailing.model.dto.report.MasterSalaryBalanceRequest;
 import com.nikulshin.detailing.model.dto.report.MasterSalaryDto;
 import com.nikulshin.detailing.model.dto.report.MasterSalaryRecordDto;
 import com.nikulshin.detailing.model.dto.report.MasterWeeklyReportDto;
@@ -66,13 +67,9 @@ public class ReportController {
         return ResponseEntity.ok().build();
     }
 
-    @GetMapping("/masters-salary-balance/")
-    public ResponseEntity<String> updateMasterSalaryLog(@RequestParam Long id,
-                                                        @RequestParam Integer year,
-                                                        @RequestParam Integer month,
-                                                        @RequestParam BigDecimal previousBalance,
-                                                        @RequestParam(name = "interimPayments", required = false) BigDecimal interimPayments) {
-        reportService.updateMasterBalance(id, year, month, previousBalance, interimPayments);
+    @PostMapping("/masters-salary-balance")
+    public ResponseEntity<String> updateMasterSalaryLog(@RequestBody MasterSalaryBalanceRequest masterSalaryBalanceRequest) {
+        reportService.updateMasterBalance(masterSalaryBalanceRequest);
         return ResponseEntity.ok().build();
     }
 }

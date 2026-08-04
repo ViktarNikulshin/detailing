@@ -21,8 +21,8 @@ services:
 
   # 2. Сервис для Tomcat на Java 21
   tomcat:
-    # Используем официальный образ Tomcat с Temurin JDK 21
-    image: tomcat:11-jdk21-temurin
+    # Tomcat с PostgreSQL
+    build: .
     container_name: tomcat_app
     restart: always
     ports:

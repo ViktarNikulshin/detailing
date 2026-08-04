@@ -38,7 +38,7 @@ public class TimesheetService {
         User user = userService.getById(masterId);
         BigDecimal previousBalance = masterSalaryBalanceRepository
                 .findByMasterAndYearAndMonth(user, start.getYear(), start.getMonthValue())
-                .map(MasterSalaryBalance::getPreviousBalance)
+                .map(MasterSalaryBalance::getPreviousBalanceTime)
                 .orElse(new BigDecimal(0));
         BigDecimal interimPayments = masterSalaryBalanceRepository
                 .findByMasterAndYearAndMonth(user, start.getYear(), start.getMonthValue())

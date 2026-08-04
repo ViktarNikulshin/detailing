@@ -33,3 +33,9 @@ db:
   container:
     name: postgres_db_5433
   name: detailing
+
+logging:
+  level:
+    org:
+      springframework:
+        security: DEBUG

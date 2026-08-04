@@ -33,5 +33,7 @@ public class MasterSalaryBalance extends Auditable {
 
     private BigDecimal previousBalance;
 
+    private BigDecimal previousBalanceTime;
+
     private BigDecimal interimPayments;
 }

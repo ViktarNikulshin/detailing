@@ -5,6 +5,7 @@ import com.nikulshin.detailing.model.domain.MasterSalaryBalance;
 import com.nikulshin.detailing.model.domain.MasterSalaryLog;
 import com.nikulshin.detailing.model.domain.User;
 import com.nikulshin.detailing.model.dto.report.MasterDetailReportDto;
+import com.nikulshin.detailing.model.dto.report.MasterSalaryBalanceRequest;
 import com.nikulshin.detailing.model.dto.report.MasterSalaryDto;
 import com.nikulshin.detailing.model.dto.report.MasterSalaryRecordDto;
 import com.nikulshin.detailing.model.dto.report.MasterWeeklyReportDto;
@@ -74,21 +75,29 @@ public class ReportService {
 
     }
     @Transactional
-    public void updateMasterBalance(Long id, Integer year, Integer month, BigDecimal previousBalance, BigDecimal interimPayments) {
-        User master = userService.getById(id);
+    public void updateMasterBalance(MasterSalaryBalanceRequest request) {
+        User master = userService.getById(request.getMasterId());
         Optional<MasterSalaryBalance> balance = masterSalaryBalanceRepository
-                .findByMasterAndYearAndMonth(master, year, month);
+                .findByMasterAndYearAndMonth(master, request.getYear(), request.getMonth());
         if (balance.isPresent()) {
             MasterSalaryBalance salaryBalance = balance.get();
-            salaryBalance.setPreviousBalance(previousBalance);
-            salaryBalance.setInterimPayments(interimPayments);
+            if (request.getIsTimesheet()) {
+                salaryBalance.setPreviousBalanceTime(request.getPreviousBalance());
+            } else {
+                salaryBalance.setPreviousBalance(request.getPreviousBalance());
+            }
+            salaryBalance.setInterimPayments(request.getInterimPayments());
         } else {
             MasterSalaryBalance newBalance = new MasterSalaryBalance();
             newBalance.setMaster(master);
-            newBalance.setYear(year);
-            newBalance.setMonth(month);
-            newBalance.setPreviousBalance(previousBalance);
-            newBalance.setInterimPayments(interimPayments);
+            newBalance.setYear(request.getYear());
+            newBalance.setMonth(request.getMonth());
+            if (request.getIsTimesheet()) {
+                newBalance.setPreviousBalanceTime(request.getPreviousBalance());
+            } else {
+                newBalance.setPreviousBalance(request.getPreviousBalance());
+            }
+            newBalance.setInterimPayments(request.getInterimPayments());
             masterSalaryBalanceRepository.save(newBalance);
         }
     }
