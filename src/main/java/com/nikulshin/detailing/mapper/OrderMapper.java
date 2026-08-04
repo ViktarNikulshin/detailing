@@ -1,6 +1,5 @@
 package com.nikulshin.detailing.mapper;
 
-
 import com.nikulshin.detailing.model.domain.Order;
 import com.nikulshin.detailing.model.domain.User;
 import com.nikulshin.detailing.model.dto.OrderDto;
@@ -17,11 +16,13 @@ import java.util.stream.Collectors;
         UserMapper.class, BrandMapper.class, DictionaryMapper.class})
 public interface OrderMapper extends BaseMapper<Order, OrderDto> {
 
-
     @Mapping(target = "masters", ignore = true)
+    @Mapping(target = "client", ignore = true) // Клиент привязывается в сервисе
     Order dtoToDomain(OrderDto dto);
 
-    @Mapping(target = "masterIds",  source = "masters", qualifiedByName = "extractIdsFromUser")
+    @Mapping(target = "masterIds", source = "masters", qualifiedByName = "extractIdsFromUser")
+    @Mapping(target = "clientName", source = "client.name")   // Извлекаем имя из Client
+    @Mapping(target = "clientPhone", source = "client.phone") // Извлекаем телефон из Client
     OrderDto domainToDto(Order order);
 
     @Named("extractIdsFromUser")
