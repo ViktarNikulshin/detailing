@@ -73,6 +73,7 @@ public class FinanceService {
         record.setExpCredit(dto.getExpCredit());
         record.setExpSalary(dto.getExpSalary());
         record.setExpTaxes(dto.getExpTaxes());
+        record.setExpAdvertising(dto.getExpAdvertising());
         record.setExpOther(dto.getExpOther());
         record.setFinanceType(dto.getFinanceType());
 
@@ -95,6 +96,7 @@ public class FinanceService {
         dto.setExpCredit(entity.getExpCredit());
         dto.setExpSalary(entity.getExpSalary());
         dto.setExpTaxes(entity.getExpTaxes());
+        dto.setExpAdvertising(entity.getExpAdvertising());
         dto.setExpOther(entity.getExpOther());
         dto.setFinanceType(entity.getFinanceType());
         return dto;

@@ -41,6 +41,9 @@ public class FinanceRecord extends Auditable { // Используем созд�
     @Column(name = "exp_taxes", precision = 12, scale = 2)
     private BigDecimal expTaxes; // Налоги
 
+    @Column(name = "exp_advertising", precision = 12, scale = 2)
+    private BigDecimal expAdvertising; // Реклама
+
     @Column(name = "exp_other", precision = 12, scale = 2)
     private BigDecimal expOther; // Прочее
 
