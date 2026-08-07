@@ -11,7 +11,6 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/acts")
 @RequiredArgsConstructor
-//@CrossOrigin(origins = "*") // При необходимости настройте CORS под ваш фронтенд
 public class ActRecordController {
 
     private final ActRecordService actRecordService;
