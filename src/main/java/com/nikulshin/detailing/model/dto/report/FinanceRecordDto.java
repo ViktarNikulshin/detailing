@@ -17,6 +17,7 @@ public class FinanceRecordDto {
     private BigDecimal expSalary;
     private BigDecimal expTaxes;
     private BigDecimal expAdvertising;
+    private BigDecimal expPartners;
     private BigDecimal expOther;
     private FinanceType financeType;
 }
