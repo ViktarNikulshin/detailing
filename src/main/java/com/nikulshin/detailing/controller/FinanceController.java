@@ -1,6 +1,7 @@
 package com.nikulshin.detailing.controller;
 
 import com.nikulshin.detailing.model.domain.FinanceType;
+import com.nikulshin.detailing.model.dto.report.FinanceBalanceRequest;
 import com.nikulshin.detailing.model.dto.report.FinanceMonthSummaryDto;
 import com.nikulshin.detailing.model.dto.report.FinanceRecordDto;
 import com.nikulshin.detailing.service.FinanceService;
@@ -40,12 +41,8 @@ public class FinanceController {
 
     // Обновить баланс на начало периода
     @PostMapping("/balance")
-    public ResponseEntity<Void> updateBalance(
-            @RequestParam("year") Integer year,
-            @RequestParam("month") Integer month,
-            @RequestParam("amount") BigDecimal amount,
-            @RequestParam("type") FinanceType type) {
-        financeService.updateStartingBalance(year, month, amount, type);
+    public ResponseEntity<Void> updateBalance(@RequestBody FinanceBalanceRequest financeBalanceRequest) {
+        financeService.updateStartingBalance(financeBalanceRequest);
         return ResponseEntity.ok().build();
     }
 }

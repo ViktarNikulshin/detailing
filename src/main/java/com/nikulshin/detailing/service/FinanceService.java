@@ -1,8 +1,9 @@
 package com.nikulshin.detailing.service;
 
-import com.nikulshin.detailing.model.domain.FinanceType;
 import com.nikulshin.detailing.model.domain.FinanceBalance;
 import com.nikulshin.detailing.model.domain.FinanceRecord;
+import com.nikulshin.detailing.model.domain.FinanceType;
+import com.nikulshin.detailing.model.dto.report.FinanceBalanceRequest;
 import com.nikulshin.detailing.model.dto.report.FinanceMonthSummaryDto;
 import com.nikulshin.detailing.model.dto.report.FinanceRecordDto;
 import com.nikulshin.detailing.repository.FinanceBalanceRepository;
@@ -47,13 +48,17 @@ public class FinanceService {
     }
 
     @Transactional
-    public void updateStartingBalance(Integer year, Integer month, BigDecimal balanceAmount, FinanceType type) {
-        FinanceBalance balance = balanceRepository.findByYearAndMonthAndFinanceType(year, month, type)
+    public void updateStartingBalance(FinanceBalanceRequest financeBalanceRequest) {
+        FinanceType type = FinanceType.valueOf(financeBalanceRequest.getType());
+        FinanceBalance balance = balanceRepository.findByYearAndMonthAndFinanceType(
+                        financeBalanceRequest.getYear(),
+                        financeBalanceRequest.getMonth(),
+                        type)
                 .orElse(new FinanceBalance());
 
-        balance.setYear(year);
-        balance.setMonth(month);
-        balance.setStartingBalance(balanceAmount);
+        balance.setYear(financeBalanceRequest.getYear());
+        balance.setMonth(financeBalanceRequest.getMonth());
+        balance.setStartingBalance(financeBalanceRequest.getAmount());
         balance.setFinanceType(type);
 
         balanceRepository.save(balance);
@@ -81,6 +86,7 @@ public class FinanceService {
         FinanceRecord saved = recordRepository.save(record);
         return convertToDto(saved);
     }
+
     @Transactional
     public void deleteRecord(Long id) {
         recordRepository.deleteById(id);
