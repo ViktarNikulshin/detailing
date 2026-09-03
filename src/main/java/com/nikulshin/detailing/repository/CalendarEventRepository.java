@@ -8,11 +8,17 @@ import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface CalendarEventRepository extends JpaRepository<CalendarEvent, Long> {
 
-    // Выборка событий, попадающих в диапазон дат (включительно), используется для отображения в календаре
     @Query("SELECT e FROM CalendarEvent e WHERE e.date BETWEEN :start AND :end ORDER BY e.date ASC")
     List<CalendarEvent> findByDateBetween(@Param("start") LocalDate start, @Param("end") LocalDate end);
+
+    Optional<CalendarEvent> findByGoogleEventId(String googleEventId);
+
+    List<CalendarEvent> findBySyncStatus(CalendarEvent.SyncStatus syncStatus);
+
+    List<CalendarEvent> findByCreatedOrderId(Long orderId);
 }

@@ -33,3 +33,27 @@ db:
   container:
     name: postgres_db
   name: ${DB_NAME}
+
+google:
+  calendar:
+    calendar-id: ${GOOGLE_CALENDAR_ID:primary}
+    webhook-base-url: ${WEBHOOK_BASE_URL:}
+    webhook-path: /api/google-calendar/webhook
+    oauth:
+      client-id: ${GOOGLE_OAUTH_CLIENT_ID:}
+      client-secret: ${GOOGLE_OAUTH_CLIENT_SECRET:}
+      refresh-token: ${GOOGLE_OAUTH_REFRESH_TOKEN:}
+      redirect-uri: ${GOOGLE_OAUTH_REDIRECT_URI:http://localhost:8080/api/google-calendar/oauth/callback}
+    sync:
+      initial-lookback: P30D
+      lookahead: P60D
+      poll-interval: PT5M
+      max-results: 2500
+      enabled: true
+    llm:
+      provider: groq
+      api-key: ${GROQ_API_KEY:}
+      base-url: https://api.groq.com/openai/v1
+      model: llama-3.3-70b-versatile
+      timeout-seconds: 30
+      enabled: true
