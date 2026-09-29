@@ -15,7 +15,6 @@ public class ActRecordController {
 
     private final ActRecordService actRecordService;
 
-    // GET /api/acts?year=2026&month=6
     @GetMapping
     public ResponseEntity<List<ActRecord>> getActsSummary(
             @RequestParam(name = "year") int year,
