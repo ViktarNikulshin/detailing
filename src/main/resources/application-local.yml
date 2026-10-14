@@ -1,0 +1,48 @@
+server:
+  servlet:
+    context-path: /detailing
+
+spring:
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://localhost:5432/detailing
+    username: admin
+    password: passw0rd
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: false
+    properties:
+      hibernate:
+        format_sql: true
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 10MB
+app:
+  jwt:
+    secret: your-very-secure-secret-key-at-least-256-bits-long
+    expiration-ms: 86400000 # 24 часа
+telegram:
+  bot:
+    token: 8854325292:AAGLSHbLpUbty8MqzCIzdO4yLdt0boTXsH8
+  chat:
+    id: -1004400159904
+db:
+  container:
+    name: postgres_db_5433
+  name: detailing
+
+logging:
+  level:
+    org:
+      springframework:
+        security: INFO
+google:
+  calendar:
+    llm:
+      provider: ollama
+      base-url: http://localhost:11434/v1
+      model: llama3.1:8b
+      enabled: true
