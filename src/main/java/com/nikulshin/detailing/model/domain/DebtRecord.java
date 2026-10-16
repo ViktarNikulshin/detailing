@@ -39,5 +39,9 @@ public class DebtRecord {
     @Column(name = "status", nullable = false)
     private DebtStatus status;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "debt_type", nullable = false, columnDefinition = "varchar(20) default 'CLIENT'")
+    private DebtType debtType = DebtType.CLIENT;
+
 
 }

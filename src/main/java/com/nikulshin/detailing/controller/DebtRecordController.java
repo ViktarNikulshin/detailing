@@ -1,6 +1,7 @@
 package com.nikulshin.detailing.controller;
 
 import com.nikulshin.detailing.model.domain.DebtRecord;
+import com.nikulshin.detailing.model.domain.DebtType;
 import com.nikulshin.detailing.service.DebtRecordService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -25,8 +26,9 @@ public class DebtRecordController {
     @GetMapping
     public ResponseEntity<List<DebtRecord>> getActsSummary(
             @RequestParam(name = "year") int year,
-            @RequestParam(name = "month") int month) {
-        List<DebtRecord> acts = debtRecordService.getDebtsSummary(year, month);
+            @RequestParam(name = "month") int month,
+            @RequestParam(name = "type", defaultValue = "CLIENT") DebtType type) {
+        List<DebtRecord> acts = debtRecordService.getDebtsSummary(year, month, type);
         return ResponseEntity.ok(acts);
     }
 
