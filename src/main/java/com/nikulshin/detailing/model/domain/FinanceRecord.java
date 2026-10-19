@@ -50,6 +50,13 @@ public class FinanceRecord extends Auditable { // Используем созд�
     @Column(name = "exp_other", precision = 12, scale = 2)
     private BigDecimal expOther; // Прочее
 
+    @Column(name = "exp_current_account", precision = 12, scale = 2)
+    private BigDecimal expCurrentAccount; // Текущий счёт (перевод с карт-счёта)
+
+    // Для автоматически созданной записи-прихода в текущем счёте хранит id исходной записи карт-счёта
+    @Column(name = "source_record_id")
+    private Long sourceRecordId;
+
     @Enumerated(EnumType.STRING)
     @Column(name = "finance_type", nullable = false)
     private FinanceType financeType;

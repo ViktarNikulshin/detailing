@@ -19,5 +19,7 @@ public class FinanceRecordDto {
     private BigDecimal expAdvertising;
     private BigDecimal expPartners;
     private BigDecimal expOther;
+    private BigDecimal expCurrentAccount;
+    private Long sourceRecordId;
     private FinanceType financeType;
 }

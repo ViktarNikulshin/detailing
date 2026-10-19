@@ -7,10 +7,15 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 public interface FinanceRecordRepository extends JpaRepository<FinanceRecord, Long> {
 
     // Выбираем записи за конкретный месяц
     @Query("SELECT f FROM FinanceRecord f WHERE f.recordDate BETWEEN :start AND :end AND f.financeType = :type ORDER BY f.recordDate ASC")
     List<FinanceRecord> findByMonthRange(@Param("start") LocalDate start, @Param("end") LocalDate end, @Param("type")FinanceType type);
+
+    Optional<FinanceRecord> findFirstBySourceRecordId(Long sourceRecordId);
+
+    void deleteBySourceRecordId(Long sourceRecordId);
 }

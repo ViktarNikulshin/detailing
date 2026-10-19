@@ -81,14 +81,71 @@ public class FinanceService {
         record.setExpAdvertising(dto.getExpAdvertising());
         record.setExpPartners(dto.getExpPartners());
         record.setExpOther(dto.getExpOther());
+        record.setExpCurrentAccount(dto.getExpCurrentAccount());
         record.setFinanceType(dto.getFinanceType());
 
         FinanceRecord saved = recordRepository.save(record);
+
+        syncCurrentAccountIncome(saved);
+
         return convertToDto(saved);
+    }
+
+    /**
+     * Синхронизирует автоматическую запись-приход в текущем счёте
+     * для статьи "Текущий счёт" карт-счёта.
+     */
+    private void syncCurrentAccountIncome(FinanceRecord source) {
+        FinanceRecord linked = recordRepository.findFirstBySourceRecordId(source.getId()).orElse(null);
+
+        if (source.getFinanceType() != FinanceType.NON_CASH) {
+            if (linked != null) {
+                recordRepository.delete(linked);
+            }
+            return;
+        }
+
+        BigDecimal amount = source.getExpCurrentAccount();
+
+        if (amount != null && amount.compareTo(BigDecimal.ZERO) > 0) {
+            if (linked == null) {
+                linked = new FinanceRecord();
+                linked.setSourceRecordId(source.getId());
+                linked.setFinanceType(FinanceType.CURRENT_ACCOUNT);
+            }
+            linked.setRecordDate(source.getRecordDate());
+            linked.setIncome(amount);
+            linked.setExpUtilities(null);
+            linked.setExpRent(null);
+            linked.setExpMaterials(null);
+            linked.setExpCredit(null);
+            linked.setExpSalary(null);
+            linked.setExpTaxes(null);
+            linked.setExpAdvertising(null);
+            linked.setExpPartners(null);
+            linked.setExpOther(null);
+            linked.setExpCurrentAccount(null);
+            recordRepository.save(linked);
+        } else if (linked != null) {
+            recordRepository.delete(linked);
+        }
     }
 
     @Transactional
     public void deleteRecord(Long id) {
+        FinanceRecord record = recordRepository.findById(id).orElse(null);
+
+        // Удаляем связанный автоматический приход, если удаляют исходную запись карт-счёта
+        recordRepository.deleteBySourceRecordId(id);
+
+        // Если удаляют автоматический приход напрямую — очищаем статью в исходной записи
+        if (record != null && record.getSourceRecordId() != null) {
+            recordRepository.findById(record.getSourceRecordId()).ifPresent(source -> {
+                source.setExpCurrentAccount(null);
+                recordRepository.save(source);
+            });
+        }
+
         recordRepository.deleteById(id);
     }
 
@@ -106,6 +163,8 @@ public class FinanceService {
         dto.setExpAdvertising(entity.getExpAdvertising());
         dto.setExpPartners(entity.getExpPartners());
         dto.setExpOther(entity.getExpOther());
+        dto.setExpCurrentAccount(entity.getExpCurrentAccount());
+        dto.setSourceRecordId(entity.getSourceRecordId());
         dto.setFinanceType(entity.getFinanceType());
         return dto;
     }
