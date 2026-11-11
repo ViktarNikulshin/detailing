@@ -18,6 +18,7 @@ public class OrderDto {
     private String clientName;
     private String clientPhone;
     private String carBrand;
+    private String comment;
     private List<WorkDto> works;
     private List<Long> masterIds;
     private LocalDateTime arrivalDate;

@@ -13,7 +13,7 @@ import java.util.Optional;
 @Repository
 public interface CalendarEventRepository extends JpaRepository<CalendarEvent, Long> {
 
-    @Query("SELECT e FROM CalendarEvent e WHERE e.date BETWEEN :start AND :end ORDER BY e.date ASC")
+    @Query("SELECT e FROM CalendarEvent e WHERE e.date BETWEEN :start AND :end AND e.createdOrderId is null ORDER BY e.date ASC")
     List<CalendarEvent> findByDateBetween(@Param("start") LocalDate start, @Param("end") LocalDate end);
 
     Optional<CalendarEvent> findByGoogleEventId(String googleEventId);

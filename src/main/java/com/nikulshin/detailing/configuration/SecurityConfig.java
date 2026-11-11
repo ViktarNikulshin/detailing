@@ -60,7 +60,13 @@ public class SecurityConfig {
                 )
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/auth/**").permitAll()
+                        // OAuth-флоу Google Calendar: получение auth-url, callback и статус
+                        // должны быть доступны без JWT (иначе получаем 403).
+                        .requestMatchers("/api/google-calendar/auth-url").permitAll()
+                        .requestMatchers("/api/google-calendar/auth-status").permitAll()
                         .requestMatchers("/api/google-calendar/oauth/**").permitAll()
+                        // Push-уведомления от Google приходят без JWT.
+                        .requestMatchers("/api/google-calendar/webhook").permitAll()
                         .requestMatchers("/error").permitAll()
                         .anyRequest().authenticated()
                 )

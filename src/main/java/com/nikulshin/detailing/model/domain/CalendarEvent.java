@@ -42,6 +42,9 @@ public class CalendarEvent {
     @Column(name = "google_calendar_id", length = 255)
     private String googleCalendarId;
 
+    @Column(name = "google_event_etag", length = 255)
+    private String googleEventEtag;
+
     @Column(name = "sync_status", nullable = false, columnDefinition = "varchar(255) default 'NEW'")
     @Enumerated(EnumType.STRING)
     private SyncStatus syncStatus = SyncStatus.NEW;

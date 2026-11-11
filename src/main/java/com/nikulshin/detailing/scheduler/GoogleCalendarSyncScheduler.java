@@ -37,8 +37,9 @@ public class GoogleCalendarSyncScheduler {
 
         try {
             var result = syncService.syncEvents(timeMin, timeMax);
-            log.info("Sync completed: created={}, updated={}, synced={}, failed={}, needsReview={}",
-                    result.getCreated(), result.getUpdated(), result.getSynced(), result.getFailed(), result.getNeedsReview());
+            log.info("Sync completed: created={}, updated={}, synced={}, failed={}, needsReview={}, skipped={}, cancelled={}",
+                    result.getCreated(), result.getUpdated(), result.getSynced(), result.getFailed(),
+                    result.getNeedsReview(), result.getSkipped(), result.getCancelled());
         } catch (Exception e) {
             log.error("Scheduled sync failed: {}", e.getMessage());
         }

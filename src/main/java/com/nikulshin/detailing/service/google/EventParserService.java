@@ -3,15 +3,16 @@ package com.nikulshin.detailing.service.google;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nikulshin.detailing.configuration.GoogleCalendarProperties;
-import com.nikulshin.detailing.model.domain.CalendarEvent;
 import com.nikulshin.detailing.service.DictionaryService;
+import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
-import reactor.core.publisher.Mono;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -25,8 +26,13 @@ public class EventParserService {
     private final WebClient webClient;
     private final DictionaryService dictionaryService;
 
+    /** Belarusian numbers in international (+375) or national (80) format. */
     private static final Pattern PHONE_PATTERN = Pattern.compile(
-            "(?:\\+?7|8)[\\s\\-]?\\(?\\d{3}\\)?[\\s\\-]?\\d{3}[\\s\\-]?\\d{2}[\\s\\-]?\\d{2}"
+            "(?<!\\d)(?:\\+?375|8[\\s\\-\\(]*0)"
+                    + "[\\s\\-\\(\\)\\.]*\\d{2}"
+                    + "[\\s\\-\\(\\)\\.]*\\d{3}"
+                    + "[\\s\\-\\(\\)\\.]*\\d{2}"
+                    + "[\\s\\-\\(\\)\\.]*\\d{2}(?!\\d)"
     );
 
     private static final Pattern NAME_PATTERN = Pattern.compile(
@@ -34,32 +40,80 @@ public class EventParserService {
             Pattern.UNICODE_CHARACTER_CLASS
     );
 
+    /**
+     * Parses an event according to the order policy:
+     * phone/name are extracted locally first; the LLM is always called afterwards.
+     * If both fields are already known, the LLM is asked only for works and optional
+     * enrichment. If either field is missing, the LLM parses the complete event.
+     */
+    public ParsedEvent parseForOrder(String description) {
+        String safeDescription = description == null ? "" : description;
+        ParsedEvent regexParsed = parse(safeDescription);
+
+        if (regexParsed.getPhone() != null && regexParsed.getName() != null) {
+            ParsedEvent llmParsed = parseWithLlm(safeDescription, false);
+            llmParsed.setPhone(regexParsed.getPhone());
+            llmParsed.setName(regexParsed.getName());
+            if (llmParsed.getComment() == null || llmParsed.getComment().isBlank()) {
+                llmParsed.setComment(regexParsed.getComment());
+            }
+            llmParsed.setConfidence(calculateConfidence(llmParsed));
+            return llmParsed;
+        }
+
+        ParsedEvent llmParsed = parseWithLlm(safeDescription, true);
+        if (llmParsed.getPhone() == null) {
+            llmParsed.setPhone(regexParsed.getPhone());
+        }
+        if (llmParsed.getName() == null) {
+            llmParsed.setName(regexParsed.getName());
+        }
+        llmParsed.setConfidence(calculateConfidence(llmParsed));
+        return llmParsed;
+    }
+
+    /** Free parser used as the first pass and as an LLM fallback. */
     public ParsedEvent parse(String description) {
         ParsedEvent parsed = new ParsedEvent();
+        String safeDescription = description == null ? "" : description;
+        String withoutPhone = safeDescription;
 
-        String phone = extractPhone(description);
-        parsed.setPhone(phone);
+        Matcher phoneMatcher = PHONE_PATTERN.matcher(safeDescription);
+        if (phoneMatcher.find()) {
+            parsed.setPhone(normalizePhone(phoneMatcher.group()));
+            withoutPhone = (safeDescription.substring(0, phoneMatcher.start()) + " "
+                    + safeDescription.substring(phoneMatcher.end())).trim();
+        }
 
-        String name = extractName(description, phone);
-        parsed.setName(name);
+        Matcher nameMatcher = NAME_PATTERN.matcher(withoutPhone);
+        if (nameMatcher.find()) {
+            parsed.setName(nameMatcher.group(1).trim());
+        }
 
-
-
-        String comment = extractComment(description, name, phone);
-        parsed.setComment(comment);
-
+        String comment = withoutPhone;
+        if (parsed.getName() != null) {
+            comment = comment.replace(parsed.getName(), "");
+        }
+        parsed.setComment(cleanComment(comment));
         parsed.setConfidence(calculateConfidence(parsed));
         return parsed;
     }
 
+    /** Backward-compatible full LLM parsing entry point. */
     public ParsedEvent parseWithLlm(String description) {
-        if (!properties.getLlm().isEnabled() || properties.getLlm().getApiKey() == null) {
-            log.debug("LLM parsing disabled or no API key");
+        return parseWithLlm(description, true);
+    }
+
+    private ParsedEvent parseWithLlm(String description, boolean fullExtraction) {
+        String apiKey = properties.getLlm().getApiKey();
+        boolean ollama = "ollama".equalsIgnoreCase(properties.getLlm().getProvider());
+        if (!properties.getLlm().isEnabled() || (isBlank(apiKey) && !ollama)) {
+            log.debug("LLM parsing disabled or API key is missing");
             return parse(description);
         }
 
         try {
-            String prompt = buildPrompt(description);
+            String prompt = buildPrompt(description, fullExtraction);
             String response = callLlm(prompt);
             return parseLlmResponse(response, description);
         } catch (Exception e) {
@@ -68,65 +122,28 @@ public class EventParserService {
         }
     }
 
-    private String extractPhone(String text) {
-        Matcher matcher = PHONE_PATTERN.matcher(text);
-        if (matcher.find()) {
-            return normalizePhone(matcher.group());
-        }
-        return null;
-    }
+    private String buildPrompt(String description, boolean fullExtraction) {
+        String mode = fullExtraction
+                ? "Извлеки все поля: name, phone, car, comment и works."
+                : "Имя и телефон уже извлечены локально. Не изменяй их. Извлеки works, car и comment.";
 
-    private String extractName(String text, String phone) {
-        String searchText = phone != null ? text.replace(phone, "") : text;
-        Matcher matcher = NAME_PATTERN.matcher(searchText);
-        if (matcher.find()) {
-            return matcher.group(1).trim();
-        }
-        return null;
-    }
-
-    private String extractComment(String text, String name, String phone) {
-        String comment = text;
-        if (name != null) comment = comment.replace(name, "");
-        if (phone != null) comment = comment.replace(phone, "");
-
-        return comment.replaceAll("[,\\s;.|:-]+$", "").replaceAll("^[,\\s;.|:-]+", "").trim();
-    }
-
-    private String normalizePhone(String phone) {
-        String digits = phone.replaceAll("[^\\d]", "");
-        if (digits.startsWith("8") && digits.length() == 11) {
-            return "+7" + digits.substring(1);
-        }
-        if (digits.startsWith("7") && digits.length() == 11) {
-            return "+" + digits;
-        }
-        if (digits.length() == 10) {
-            return "+7" + digits;
-        }
-        return phone;
-    }
-
-    private double calculateConfidence(ParsedEvent parsed) {
-        double score = 0;
-        if (parsed.getPhone() != null) score += 0.4;
-        if (parsed.getName() != null) score += 0.4;
-
-        return Math.min(score, 1.0);
-    }
-
-    private String buildPrompt(String description) {
         return """
-                Извлеки из текста записи в календаре данные для заказа автодитейлинга.
-                в ответе должен быть только JSON без лишнего текста и без ```json ```.
-                
-                Поля: name (имя клиента), phone (телефон в формате +375* или 80*), car, comment.
-                Также нужно извлечь типы работ и их стоимость в  листе works с полями type, cost.
-                типы работ сопоставить по  возможности со справочником %s иначе присвоить тип Прочее
-                Если поля нет - null.
-                
-                Текст: "%s"
-                """.formatted(dictionaryService.getActiveDictionaryItemsByType("WORK_TYPE"), description);
+                Ты извлекаешь данные из записи календаря для заказа автодетейлинга.
+                Ответь только валидным JSON без markdown и без ```json.
+                %s
+                Поля JSON:
+                - name: имя клиента или null
+                - phone: телефон в формате +375XXXXXXXXX или 80XXXXXXXXX или null
+                - car: марка/модель автомобиля или null
+                - comment: дополнительный комментарий или null
+                - works: массив объектов {"type": string, "cost": number|null}
+                Используй в works только виды работ из справочника ниже. Если ни одну работу
+                уверенно сопоставить нельзя — верни works как пустой массив [].
+                Не придумывай работы и стоимость.
+                Справочник WORK_TYPE: %s
+                Текст записи:
+                %s
+                """.formatted(mode, dictionaryService.getActiveDictionaryItemsByType("WORK_TYPE"), description);
     }
 
     private String callLlm(String prompt) {
@@ -154,15 +171,37 @@ public class EventParserService {
     private ParsedEvent parseLlmResponse(String response, String originalDescription) {
         try {
             JsonNode root = objectMapper.readTree(response);
-            String content = root.path("choices").get(0).path("message").path("content").asText();
-            log.info(content);
+            JsonNode choices = root.path("choices");
+            if (!choices.isArray() || choices.isEmpty()) {
+                throw new IllegalArgumentException("LLM response does not contain choices");
+            }
+
+            String content = choices.get(0).path("message").path("content").asText("");
+            content = content.replaceFirst("^```(?:json)?\\s*", "")
+                    .replaceFirst("\\s*```$", "").trim();
             JsonNode parsed = objectMapper.readTree(content);
+
             ParsedEvent event = new ParsedEvent();
             event.setName(parsed.path("name").asText(null));
-            event.setPhone(parsed.path("phone").asText(null));
+            String llmPhone = parsed.path("phone").asText(null);
+            event.setPhone(llmPhone == null ? null : normalizePhone(llmPhone));
             event.setCar(parsed.path("car").asText(null));
             event.setComment(parsed.path("comment").asText(null));
-            event.setConfidence(0.9);
+
+            JsonNode works = parsed.path("works");
+            if (works.isArray()) {
+                for (JsonNode workNode : works) {
+                    String type = workNode.path("type").asText(null);
+                    if (type == null || type.isBlank()) {
+                        continue;
+                    }
+                    Integer cost = workNode.path("cost").isNumber()
+                            ? workNode.path("cost").asInt()
+                            : null;
+                    event.getWorks().add(new ParsedWork(type.trim(), cost));
+                }
+            }
+            event.setConfidence(calculateConfidence(event));
             return event;
         } catch (Exception e) {
             log.warn("Failed to parse LLM response: {}", e.getMessage());
@@ -170,12 +209,44 @@ public class EventParserService {
         }
     }
 
-    @lombok.Data
+    private String normalizePhone(String phone) {
+        String digits = phone.replaceAll("[^\\d]", "");
+        if (digits.startsWith("375") && digits.length() == 12) {
+            return "+" + digits;
+        }
+        if (digits.startsWith("80") && digits.length() == 11) {
+            return "+375" + digits.substring(2);
+        }
+        return phone;
+    }
+
+    private double calculateConfidence(ParsedEvent parsed) {
+        double score = 0;
+        if (parsed.getPhone() != null) score += 0.4;
+        if (parsed.getName() != null) score += 0.4;
+        return Math.min(score, 1.0);
+    }
+
+    private String cleanComment(String comment) {
+        return comment.replaceAll("[,\\s;.|:-]+$", "")
+                .replaceAll("^[,\\s;.|:-]+", "")
+                .trim();
+    }
+
+    private boolean isBlank(String value) {
+        return value == null || value.isBlank();
+    }
+
+    @Data
     public static class ParsedEvent {
         private String name;
         private String phone;
         private String car;
         private String comment;
         private double confidence;
+        private List<ParsedWork> works = new ArrayList<>();
+    }
+
+    public record ParsedWork(String type, Integer cost) {
     }
 }
