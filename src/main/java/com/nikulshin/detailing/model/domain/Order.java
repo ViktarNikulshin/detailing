@@ -1,6 +1,7 @@
 package com.nikulshin.detailing.model.domain;
 
 import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -34,6 +35,9 @@ public class Order {
     private Client client;
 
     private String carBrand;
+
+    @Column(length = 2000)
+    private String comment;
 
 
     @OneToMany(
