@@ -47,13 +47,13 @@ google:
     sync:
       initial-lookback: P30D
       lookahead: P60D
-      poll-interval: PT5M
+      poll-interval: PT30M
       max-results: 2500
-      enabled: true
+      enabled: false
     llm:
       provider: groq
       api-key: ${GROQ_API_KEY:}
       base-url: https://api.groq.com/openai/v1
       model: llama-3.3-70b-versatile
       timeout-seconds: 30
-      enabled: true
+      enabled: false
