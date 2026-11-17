@@ -22,6 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.time.ZoneId;
 import java.util.List;
 import java.util.Objects;
@@ -131,12 +132,12 @@ public class GoogleCalendarSyncService {
         if (event.getStart() != null && event.getStart().getDateTime() != null) {
             calendarEvent.setDate(parseDateTime(event.getStart().getDateTime()));
         } else if (event.getStart() != null && event.getStart().getDate() != null) {
-            calendarEvent.setDate(LocalDate.parse(event.getStart().getDate().toString()));
+            calendarEvent.setDate(parseAllDayDate(event.getStart().getDate().toString()));
         }
         if (event.getEnd() != null && event.getEnd().getDateTime() != null) {
             calendarEvent.setEndDate(parseDateTime(event.getEnd().getDateTime()));
         } else if (event.getEnd() != null && event.getEnd().getDate() != null) {
-            calendarEvent.setEndDate(LocalDate.parse(event.getEnd().getDate().toString()));
+            calendarEvent.setEndDate(parseAllDayDate(event.getEnd().getDate().toString()));
         }
 
         // Для извлечения работ и стоимости передаём в парсер и название, и описание:
@@ -226,8 +227,8 @@ public class GoogleCalendarSyncService {
         order.setCarBrand(parsed.getCar());
         order.setStatus(OrderStatus.NEW);
         order.setCreatedAt(LocalDateTime.now());
-        order.setArrivalDate(calendarEvent.getDate().atStartOfDay());
-        order.setDeliveryDate(calendarEvent.getEndDate().atStartOfDay());
+        order.setArrivalDate(calendarEvent.getDate());
+        order.setDeliveryDate(calendarEvent.getEndDate());
 
         // Если LLM не распознал ни одной работы, сохраняем весь исходный текст,
         // чтобы оператор не потерял детали записи календаря.
@@ -284,17 +285,21 @@ public class GoogleCalendarSyncService {
         });
     }
 
-    private LocalDate parseDateTime(com.google.api.client.util.DateTime dateTime) {
+    private LocalDateTime parseDateTime(com.google.api.client.util.DateTime dateTime) {
         if (dateTime == null) return null;
         try {
-            return LocalDate.ofInstant(
+            return LocalDateTime.ofInstant(
                     java.time.Instant.ofEpochMilli(dateTime.getValue()),
                     ZoneId.systemDefault()
             );
         } catch (Exception e) {
             log.warn("Failed to parse dateTime: {}", dateTime.toStringRfc3339());
-            return LocalDate.now();
+            return LocalDateTime.now();
         }
+    }
+
+    private LocalDateTime parseAllDayDate(String date) {
+        return LocalDate.parse(date).atStartOfDay();
     }
 
     @lombok.Data

@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -18,7 +19,10 @@ public class CalendarEventService {
 
     @Transactional(readOnly = true)
     public List<CalendarEvent> getEventsByDateRange(LocalDate start, LocalDate end) {
-        return calendarEventRepository.findByDateBetween(start, end);
+        return calendarEventRepository.findByDateBetween(
+                start.atStartOfDay(),
+                end.plusDays(1).atStartOfDay()
+        );
     }
 
     @Transactional(readOnly = true)
@@ -37,6 +41,7 @@ public class CalendarEventService {
     public CalendarEvent updateEvent(Long id, CalendarEvent event) {
         CalendarEvent existing = getEventById(id);
         existing.setDate(event.getDate());
+        existing.setEndDate(event.getEndDate());
         existing.setDescription(event.getDescription());
         return calendarEventRepository.save(existing);
     }

@@ -11,7 +11,6 @@ import jakarta.persistence.Index;
 import jakarta.persistence.Table;
 import lombok.Data;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity
@@ -28,10 +27,10 @@ public class CalendarEvent {
     private Long id;
 
     @Column(name = "event_date", nullable = false)
-    private LocalDate date;
+    private LocalDateTime date;
 
     @Column(name = "event_end_date")
-    private LocalDate endDate;
+    private LocalDateTime endDate;
 
     @Column(name = "description", nullable = false, length = 2000)
     private String description;
