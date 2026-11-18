@@ -40,7 +40,7 @@ public class DebtRecord {
     private DebtStatus status;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "debt_type", nullable = false, columnDefinition = "varchar(20) default 'CLIENT'")
+    @Column(name = "debt_type", nullable = false, columnDefinition = "varchar(20)")
     private DebtType debtType = DebtType.CLIENT;
 
 
