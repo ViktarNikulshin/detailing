@@ -24,7 +24,7 @@ public class ClientController {
      * Клиентская база с поиском по имени/телефону и агрегатами по заказам.
      */
     @GetMapping
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     public ResponseEntity<List<ClientDto>> getClients(
             @RequestParam(name = "search", required = false) String search) {
         return ResponseEntity.ok(clientService.getClients(search));
@@ -34,7 +34,7 @@ public class ClientController {
      * Карточка клиента с историей заказов.
      */
     @GetMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     public ResponseEntity<ClientDetailsDto> getClient(@PathVariable Long id) {
         return ResponseEntity.ok(clientService.getClient(id));
     }

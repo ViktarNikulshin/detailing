@@ -11,6 +11,14 @@ import java.util.List;
 public interface OrderRepository extends JpaRepository<Order, Long> {
     List<Order> findByArrivalDateBetween(LocalDateTime start, LocalDateTime end);
     List<Order> findByStatusAndDeliveryDateBetween(OrderStatus status, LocalDateTime start, LocalDateTime end);
+
+    /**
+     * Завершённые заказы с датой доставки в диапазоне [from, to):
+     * источник автоматических поступлений платёжного календаря.
+     */
+    List<Order> findByDeliveryDateGreaterThanEqualAndDeliveryDateLessThan(
+             LocalDateTime from, LocalDateTime to);
+
     List<Order> findByClientIdOrderByArrivalDateDesc(Long clientId);
 
     /**
